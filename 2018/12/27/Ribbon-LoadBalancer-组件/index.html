@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="MBTgt9Mxa-LxR7QuvwTF3yIYs46YcoanpNJXjFqSQAw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring Cloud,Ribbon,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ILoadBalancer这是最高级的一个抽象类.它有一个抽象的实现AbstractLoadBalancer. 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253public interface ILoadBalancer &amp;#123;	/**	 * In">
+<meta name="keywords" content="Spring Cloud,Ribbon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ribbon LoadBalancer 组件">
+<meta property="og:url" content="http://linxingwu.github.io/2018/12/27/Ribbon-LoadBalancer-组件/index.html">
+<meta property="og:site_name" content="林兴武的博客">
+<meta property="og:description" content="ILoadBalancer这是最高级的一个抽象类.它有一个抽象的实现AbstractLoadBalancer. 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253public interface ILoadBalancer &amp;#123;	/**	 * In">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-17T17:39:15.417Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ribbon LoadBalancer 组件">
+<meta name="twitter:description" content="ILoadBalancer这是最高级的一个抽象类.它有一个抽象的实现AbstractLoadBalancer. 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253public interface ILoadBalancer &amp;#123;	/**	 * In">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://linxingwu.github.io/2018/12/27/Ribbon-LoadBalancer-组件/">
+
+
+
+
+
+  <title>Ribbon LoadBalancer 组件 | 林兴武的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3db2dd678acf5b830ae79029bad47113";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/linxingwu/linxingwu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林兴武的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linxingwu.github.io/2018/12/27/Ribbon-LoadBalancer-组件/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林兴武">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林兴武的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ribbon LoadBalancer 组件</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-27T11:17:17+08:00">
+                2018-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ILoadBalancer"><a href="#ILoadBalancer" class="headerlink" title="ILoadBalancer"></a>ILoadBalancer</h1><p>这是最高级的一个抽象类.它有一个抽象的实现AbstractLoadBalancer.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ILoadBalancer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Initial list of servers.</span></span><br><span class="line"><span class="comment">	 * This API also serves to add additional ones at a later time</span></span><br><span class="line"><span class="comment">	 * The same logical server (host:port) could essentially be added multiple times</span></span><br><span class="line"><span class="comment">	 * (helpful in cases where you want to give more "weightage" perhaps ..)</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> newServers new servers to add</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addServers</span><span class="params">(List&lt;Server&gt; newServers)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Choose a server from load balancer.</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> key An object that the load balancer may use to determine which server to return. null if </span></span><br><span class="line"><span class="comment">	 *         the load balancer does not use this parameter.</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> server chosen</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Server <span class="title">chooseServer</span><span class="params">(Object key)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * To be called by the clients of the load balancer to notify that a Server is down</span></span><br><span class="line"><span class="comment">	 * else, the LB will think its still Alive until the next Ping cycle - potentially</span></span><br><span class="line"><span class="comment">	 * (assuming that the LB Impl does a ping)</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> server Server to mark as down</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">markServerDown</span><span class="params">(Server server)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@deprecated</span> 2016-01-20 This method is deprecated in favor of the</span></span><br><span class="line"><span class="comment">	 * cleaner &#123;<span class="doctag">@link</span> #getReachableServers&#125; (equivalent to availableOnly=true)</span></span><br><span class="line"><span class="comment">	 * and &#123;<span class="doctag">@link</span> #getAllServers&#125; API (equivalent to availableOnly=false).</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * Get the current list of servers.</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> availableOnly if true, only live and available servers should be returned</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Deprecated</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getServerList</span><span class="params">(<span class="keyword">boolean</span> availableOnly)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> Only the servers that are up and reachable.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getReachableServers</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> All known servers, both reachable and unreachable.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getAllServers</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="AbstractLoadBalancer"><a href="#AbstractLoadBalancer" class="headerlink" title="AbstractLoadBalancer"></a>AbstractLoadBalancer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractLoadBalancer</span> <span class="keyword">implements</span> <span class="title">ILoadBalancer</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">enum</span> ServerGroup&#123;</span><br><span class="line">        ALL,</span><br><span class="line">        STATUS_UP,</span><br><span class="line">        STATUS_NOT_UP        </span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * delegate to &#123;<span class="doctag">@link</span> #chooseServer(Object)&#125; with parameter null.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">chooseServer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">return</span> chooseServer(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * List of servers that this Loadbalancer knows about</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> serverGroup Servers grouped by status, e.g., &#123;<span class="doctag">@link</span> ServerGroup#STATUS_UP&#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> List&lt;Server&gt; <span class="title">getServerList</span><span class="params">(ServerGroup serverGroup)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Obtain LoadBalancer related Statistics</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> LoadBalancerStats <span class="title">getLoadBalancerStats</span><span class="params">()</span></span>;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个抽象类中设置了一个enum用来表示不同状态是serverList，然后就是增加了一个无参的chooseServer。</p>
+<h3 id="BaseLoadBalancer"><a href="#BaseLoadBalancer" class="headerlink" title="BaseLoadBalancer"></a>BaseLoadBalancer</h3><p>这是第一个具体的实现类也基本是所有其他负载均衡器的父类。看一下它都是怎么构成了，做了什么<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> IRule DEFAULT_RULE = <span class="keyword">new</span> RoundRobinRule();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> SerialPingStrategy DEFAULT_PING_STRATEGY = <span class="keyword">new</span> SerialPingStrategy();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEFAULT_NAME = <span class="string">"default"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"LoadBalancer_"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> IRule rule = DEFAULT_RULE;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> IPingStrategy pingStrategy = DEFAULT_PING_STRATEGY;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> IPing ping = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Monitor</span>(name = PREFIX + <span class="string">"AllServerList"</span>, type = DataSourceType.INFORMATIONAL)</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">volatile</span> List&lt;Server&gt; allServerList = Collections</span><br><span class="line">        .synchronizedList(<span class="keyword">new</span> ArrayList&lt;Server&gt;());</span><br><span class="line"><span class="meta">@Monitor</span>(name = PREFIX + <span class="string">"UpServerList"</span>, type = DataSourceType.INFORMATIONAL)</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">volatile</span> List&lt;Server&gt; upServerList = Collections</span><br><span class="line">        .synchronizedList(<span class="keyword">new</span> ArrayList&lt;Server&gt;());</span><br><span class="line"><span class="keyword">protected</span> ReadWriteLock allServerLock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line"><span class="keyword">protected</span> ReadWriteLock upServerLock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> String name = DEFAULT_NAME;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> Timer lbTimer = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> pingIntervalSeconds = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> maxTotalPingTimeSeconds = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">protected</span> Comparator&lt;Server&gt; serverComparator = <span class="keyword">new</span> ServerComparator();</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> AtomicBoolean pingInProgress = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> LoadBalancerStats lbStats;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p>IRule</p>
+<p> 默认的IRule就是RoundRobinRule，</p>
+</li>
+<li><p>SerialPingStrategy </p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SerialPingStrategy</span> <span class="keyword">implements</span> <span class="title">IPingStrategy</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span>[] pingServers(IPing ping, Server[] servers) &#123;</span><br><span class="line">        <span class="keyword">int</span> numCandidates = servers.length;</span><br><span class="line">        <span class="keyword">boolean</span>[] results = <span class="keyword">new</span> <span class="keyword">boolean</span>[numCandidates];</span><br><span class="line">    </span><br><span class="line">        logger.debug(<span class="string">"LoadBalancer:  PingTask executing [&#123;&#125;] servers configured"</span>, numCandidates);</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numCandidates; i++) &#123;</span><br><span class="line">            results[i] = <span class="keyword">false</span>; <span class="comment">/* Default answer is DEAD. */</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">NOTE:</span> IFF we were doing a real ping</span></span><br><span class="line">                <span class="comment">// assuming we had a large set of servers (say 15)</span></span><br><span class="line">                <span class="comment">// the logic below will run them serially</span></span><br><span class="line">                <span class="comment">// hence taking 15 times the amount of time it takes</span></span><br><span class="line">                <span class="comment">// to ping each server</span></span><br><span class="line">                <span class="comment">// A better method would be to put this in an executor</span></span><br><span class="line">                <span class="comment">// pool</span></span><br><span class="line">                <span class="comment">// But, at the time of this writing, we dont REALLY</span></span><br><span class="line">                <span class="comment">// use a Real Ping (its mostly in memory eureka call)</span></span><br><span class="line">                <span class="comment">// hence we can afford to simplify this design and run</span></span><br><span class="line">                <span class="comment">// this</span></span><br><span class="line">                <span class="comment">// serially</span></span><br><span class="line">                <span class="keyword">if</span> (ping != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    results[i] = ping.isAlive(servers[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                logger.error(<span class="string">"Exception while pinging Server: '&#123;&#125;'"</span>, servers[i], e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> results;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 采用了一种遍历的方式去ping 所有的server。作者的注释也指出，这种效率并不高。应当放在线程池里执行。代码里这么写，是因为IPing的实现，并没有真的去ping。</p>
+</li>
+<li><p>IPing</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DummyPing</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerPing</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DummyPing</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAlive</span><span class="params">(Server server)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(IClientConfig clientConfig)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 这个已经和书上说的不一样了，官网说的DummyPing，书上说的NoOpPing，不过区别不大，都是永远返回true。</p>
+</li>
+<li><p>维护了两个server的list，一个是正常服务，一个是所有服务。</p>
+</li>
+<li><p>LoadBalancerStats</p>
+<p> 这个类中存储了一些server的统计信息，断路器状态等等，用于辅助做出决策。例如在WeightedResponseTimeRule中计算权重就是根据这个类提供的信息。</p>
+</li>
+<li><p>定时任务<br> 在默认的无参构造方法中启动了一个定时任务，每隔10s运行一次。此类的无参构造只是用于反射，日常初始化还需要调用init等其他方法，所以如果要使用这个类，不应该直接调用无参构造方法。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">runPinger</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!pingInProgress.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123; </span><br><span class="line">        <span class="keyword">return</span>; <span class="comment">// Ping in progress - nothing to do</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// we are "in" - we get to Ping</span></span><br><span class="line"></span><br><span class="line">    Server[] allServers = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">boolean</span>[] results = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    Lock allLock = <span class="keyword">null</span>;</span><br><span class="line">    Lock upLock = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * The readLock should be free unless an addServer operation is</span></span><br><span class="line"><span class="comment">         * going on...</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        allLock = allServerLock.readLock();</span><br><span class="line">        allLock.lock();</span><br><span class="line">        allServers = allServerList.toArray(<span class="keyword">new</span> Server[allServerList.size()]);</span><br><span class="line">        allLock.unlock();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> numCandidates = allServers.length;</span><br><span class="line">        results = pingerStrategy.pingServers(ping, allServers);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> List&lt;Server&gt; newUpList = <span class="keyword">new</span> ArrayList&lt;Server&gt;();</span><br><span class="line">        <span class="keyword">final</span> List&lt;Server&gt; changedServers = <span class="keyword">new</span> ArrayList&lt;Server&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numCandidates; i++) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> isAlive = results[i];</span><br><span class="line">            Server svr = allServers[i];</span><br><span class="line">            <span class="keyword">boolean</span> oldIsAlive = svr.isAlive();</span><br><span class="line"></span><br><span class="line">            svr.setAlive(isAlive);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (oldIsAlive != isAlive) &#123;</span><br><span class="line">                changedServers.add(svr);</span><br><span class="line">                logger.debug(<span class="string">"LoadBalancer [&#123;&#125;]:  Server [&#123;&#125;] status changed to &#123;&#125;"</span>, </span><br><span class="line">                    name, svr.getId(), (isAlive ? <span class="string">"ALIVE"</span> : <span class="string">"DEAD"</span>));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (isAlive) &#123;</span><br><span class="line">                newUpList.add(svr);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        upLock = upServerLock.writeLock();</span><br><span class="line">        upLock.lock();</span><br><span class="line">        upServerList = newUpList;</span><br><span class="line">        upLock.unlock();</span><br><span class="line"></span><br><span class="line">        notifyServerStatusChangeListener(changedServers);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        pingInProgress.set(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 主要是把所有server都ping一遍，然后重新设置upServerList,把down掉的server剔除，加上已经恢复的server。</p>
+</li>
+</ol>
+<h4 id="DynamicServerListLoadBalancer"><a href="#DynamicServerListLoadBalancer" class="headerlink" title="DynamicServerListLoadBalancer"></a>DynamicServerListLoadBalancer</h4><blockquote>
+<p> 该类继承于BaseLoadBalancer类，它是对基础负载均衡器的扩展。在该负载均衡器，实现了服务实例清单在运行期的动态更新能力；同时，它还具备了对服务实例清单的过滤功能。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> AtomicBoolean serverListUpdateInProgress = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">volatile</span> ServerList&lt;T&gt; serverListImpl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">volatile</span> ServerListFilter&lt;T&gt; filter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> ServerListUpdater.UpdateAction updateAction = <span class="keyword">new</span> ServerListUpdater.UpdateAction() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        updateListOfServers();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">volatile</span> ServerListUpdater serverListUpdater;</span><br></pre></td></tr></table></figure>
+<p>负载均衡器中增加了成员变量有ServerList，ServerListFilter，UpdateAction,ServerListUpdater.</p>
+<p>在DynamicServerListLoadBalancer的构造方法中</p>
+<ol>
+<li><p>ServerList</p>
+<p> 在DynamicServerListLoadBalancer的构造方法中调用了这个方法用来更新serverList：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@VisibleForTesting</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateListOfServers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;T&gt; servers = <span class="keyword">new</span> ArrayList&lt;T&gt;();</span><br><span class="line">    <span class="keyword">if</span> (serverListImpl != <span class="keyword">null</span>) &#123;</span><br><span class="line">        servers = serverListImpl.getUpdatedListOfServers();</span><br><span class="line">        LOGGER.debug(<span class="string">"List of Servers for &#123;&#125; obtained from Discovery client: &#123;&#125;"</span>,</span><br><span class="line">                getIdentifier(), servers);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (filter != <span class="keyword">null</span>) &#123;</span><br><span class="line">            servers = filter.getFilteredListOfServers(servers);</span><br><span class="line">            LOGGER.debug(<span class="string">"Filtered List of Servers for &#123;&#125; obtained from Discovery client: &#123;&#125;"</span>,</span><br><span class="line">                    getIdentifier(), servers);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    updateAllServerList(servers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ServerList</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Server</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;T&gt; <span class="title">getInitialListOfServers</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return updated list of servers. This is called say every 30 secs</span></span><br><span class="line"><span class="comment">     * (configurable) by the Loadbalancer's Ping cycle</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;T&gt; <span class="title">getUpdatedListOfServers</span><span class="params">()</span></span>;   </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 通过查找配置类可以发现，这个类的实例是由DomainExtractingServerList实例化的。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line"><span class="keyword">public</span> ServerList&lt;?&gt; ribbonServerList(IClientConfig config, Provider&lt;EurekaClient&gt; eurekaClientProvider) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.propertiesFactory.isSet(ServerList.class, serviceId)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.propertiesFactory.get(ServerList.class, config, serviceId);</span><br><span class="line">    &#125;</span><br><span class="line">    DiscoveryEnabledNIWSServerList discoveryServerList = <span class="keyword">new</span> DiscoveryEnabledNIWSServerList(</span><br><span class="line">            config, eurekaClientProvider);</span><br><span class="line">    DomainExtractingServerList serverList = <span class="keyword">new</span> DomainExtractingServerList(</span><br><span class="line">            discoveryServerList, config, <span class="keyword">this</span>.approximateZoneFromHostname);</span><br><span class="line">    <span class="keyword">return</span> serverList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 注意DomainExtractingServerList的构造函数，传入了一个DiscoveryEnabledNIWSServerList discoveryServerList，DomainExtractingServerList对接口的具体实现就调用了这个传入参数的的对应方法。看一下DiscoveryEnabledNIWSServerList的具体实现</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;DiscoveryEnabledServer&gt; <span class="title">getInitialListOfServers</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> obtainServersViaDiscovery();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;DiscoveryEnabledServer&gt; <span class="title">getUpdatedListOfServers</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> obtainServersViaDiscovery();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 这高端操作，我一直没看明白这两个方法为什么最终居然是一个实现，我还以为这不符合代码规范呢。没想到啊，Spring这浓眉大眼的家伙也叛变革命了！</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;DiscoveryEnabledServer&gt; <span class="title">obtainServersViaDiscovery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;DiscoveryEnabledServer&gt; serverList = <span class="keyword">new</span> ArrayList&lt;DiscoveryEnabledServer&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (eurekaClientProvider == <span class="keyword">null</span> || eurekaClientProvider.get() == <span class="keyword">null</span>) &#123;</span><br><span class="line">        logger.warn(<span class="string">"EurekaClient has not been initialized yet, returning an empty list"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;DiscoveryEnabledServer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    EurekaClient eurekaClient = eurekaClientProvider.get();</span><br><span class="line">    <span class="keyword">if</span> (vipAddresses!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">for</span> (String vipAddress : vipAddresses.split(<span class="string">","</span>)) &#123;</span><br><span class="line">            <span class="comment">// if targetRegion is null, it will be interpreted as the same region of client</span></span><br><span class="line">            List&lt;InstanceInfo&gt; listOfInstanceInfo = eurekaClient.getInstancesByVipAddress(vipAddress, isSecure, targetRegion);</span><br><span class="line">            <span class="keyword">for</span> (InstanceInfo ii : listOfInstanceInfo) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ii.getStatus().equals(InstanceStatus.UP)) &#123;</span><br><span class="line">    </span><br><span class="line">                    <span class="keyword">if</span>(shouldUseOverridePort)&#123;</span><br><span class="line">                        <span class="keyword">if</span>(logger.isDebugEnabled())&#123;</span><br><span class="line">                            logger.debug(<span class="string">"Overriding port on client name: "</span> + clientName + <span class="string">" to "</span> + overridePort);</span><br><span class="line">                        &#125;</span><br><span class="line">    </span><br><span class="line">                        <span class="comment">// copy is necessary since the InstanceInfo builder just uses the original reference,</span></span><br><span class="line">                        <span class="comment">// and we don't want to corrupt the global eureka copy of the object which may be</span></span><br><span class="line">                        <span class="comment">// used by other clients in our system</span></span><br><span class="line">                        InstanceInfo copy = <span class="keyword">new</span> InstanceInfo(ii);</span><br><span class="line">    </span><br><span class="line">                        <span class="keyword">if</span>(isSecure)&#123;</span><br><span class="line">                            ii = <span class="keyword">new</span> InstanceInfo.Builder(copy).setSecurePort(overridePort).build();</span><br><span class="line">                        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                            ii = <span class="keyword">new</span> InstanceInfo.Builder(copy).setPort(overridePort).build();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">    </span><br><span class="line">                    DiscoveryEnabledServer des = <span class="keyword">new</span> DiscoveryEnabledServer(ii, isSecure, shouldUseIpAddr);</span><br><span class="line">                    des.setZone(DiscoveryClient.getZone(ii));</span><br><span class="line">                    serverList.add(des);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (serverList.size()&gt;<span class="number">0</span> &amp;&amp; prioritizeVipAddressBasedServers)&#123;</span><br><span class="line">                <span class="keyword">break</span>; <span class="comment">// if the current vipAddress has servers, we dont use subsequent vipAddress based servers</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> serverList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> EurekaClient通过服务名来返回对应的<code>List&lt;InstanceInfo&gt;</code>,然后把InstanceInfo转换成DiscoveryEnabledServer返回，DomainExtractingServerList会做后一步的处理。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;DiscoveryEnabledServer&gt; <span class="title">setZones</span><span class="params">(List&lt;DiscoveryEnabledServer&gt; servers)</span> </span>&#123;</span><br><span class="line">	List&lt;DiscoveryEnabledServer&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">	<span class="keyword">boolean</span> isSecure = <span class="keyword">this</span>.ribbon.isSecure(<span class="keyword">true</span>);</span><br><span class="line">	<span class="keyword">boolean</span> shouldUseIpAddr = <span class="keyword">this</span>.ribbon.isUseIPAddrForServer();</span><br><span class="line">	<span class="keyword">for</span> (DiscoveryEnabledServer server : servers) &#123;</span><br><span class="line">		result.add(<span class="keyword">new</span> DomainExtractingServer(server, isSecure, shouldUseIpAddr,</span><br><span class="line">				<span class="keyword">this</span>.approximateZoneFromHostname));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ServerListUpdater</p>
+<p> DynamicServerListLoadBalancer构造方法中，同时调用了</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enableAndInitLearnNewServersFeature</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LOGGER.info(<span class="string">"Using serverListUpdater &#123;&#125;"</span>, serverListUpdater.getClass().getSimpleName());</span><br><span class="line">    serverListUpdater.start(updateAction);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ServerListUpdater</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * an interface for the updateAction that actually executes a server list update</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UpdateAction</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">doUpdate</span><span class="params">()</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * start the serverList updater with the given update action</span></span><br><span class="line"><span class="comment">     * This call should be idempotent.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> updateAction</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">(UpdateAction updateAction)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * stop the serverList updater. This call should be idempotent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the last update timestamp as a &#123;<span class="doctag">@link</span> java.util.Date&#125; string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">getLastUpdate</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the number of ms that has elapsed since last update</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDurationSinceLastUpdateMs</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the number of update cycles missed, if valid</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getNumberMissedCycles</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the number of threads used, if vaid</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getCoreThreads</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 这个接口没有什么可说的，重点在它的实现类中，它的默认实现是PollingServerListUpdater</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(<span class="keyword">final</span> UpdateAction updateAction)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isActive.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</span><br><span class="line">        <span class="keyword">final</span> Runnable wrapperRunnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (!isActive.get()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (scheduledFuture != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        scheduledFuture.cancel(<span class="keyword">true</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    updateAction.doUpdate();</span><br><span class="line">                    lastUpdated = System.currentTimeMillis();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    logger.warn(<span class="string">"Failed one update cycle"</span>, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    </span><br><span class="line">        scheduledFuture = getRefreshExecutor().scheduleWithFixedDelay(</span><br><span class="line">                wrapperRunnable,</span><br><span class="line">                initialDelayMs,</span><br><span class="line">                refreshIntervalMs,</span><br><span class="line">                TimeUnit.MILLISECONDS</span><br><span class="line">        );</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        logger.info(<span class="string">"Already active, no-op"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 这个start方法的实现中可以看出来，启动了一个定时任务按照延迟1s后开始，每30s重复执行来更新serverList。</p>
+</li>
+<li><p>ServerListFilter</p>
+<p> 前文可以看到serverList更新之后并不是直接返回，而是继续调用filter来对Eureka返回的结果进行进一步的过滤。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ServerListFilter</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Server</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;T&gt; <span class="title">getFilteredListOfServers</span><span class="params">(List&lt;T&gt; servers)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 这个接口的实现在本文中就像一个递归，仍然是一个接口，然后抽象类，然后base，然后再具体的实现。</p>
+<p> 在抽象的这一层AbstractServerListFilter增加了一个成员变量LoadBalancerStats，这是一个老朋友了，它提供了server的统计信息。</p>
+<p> 3.1 ZoneAffinityServerListFilter 这就相当于base了</p>
+<blockquote>
+<p>ZoneAffinityServerListFilter：该过滤器基于“区域感知（Zone Affinity）”的方式实现服务实例的过滤，也就是说它会根据提供服务的实例所处区域（Zone）与消费者自身的所处区域（Zone）进行比较，过滤掉那些不是同处一个区域的实例。</p>
+</blockquote>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;T&gt; <span class="title">getFilteredListOfServers</span><span class="params">(List&lt;T&gt; servers)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (zone != <span class="keyword">null</span> &amp;&amp; (zoneAffinity || zoneExclusive) &amp;&amp; servers !=<span class="keyword">null</span> &amp;&amp; servers.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        List&lt;T&gt; filteredServers = Lists.newArrayList(Iterables.filter(</span><br><span class="line">                servers, <span class="keyword">this</span>.zoneAffinityPredicate.getServerOnlyPredicate()));</span><br><span class="line">        <span class="keyword">if</span> (shouldEnableZoneAffinity(filteredServers)) &#123;</span><br><span class="line">            <span class="keyword">return</span> filteredServers;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (zoneAffinity) &#123;</span><br><span class="line">            overrideCounter.increment();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> servers;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 可以看到这里通过Iterables来进行过滤，过滤条件是第二个参数一个Predicate类，这个参数在ZoneAffinityServerListFilter中指定为ZoneAffinityPredicate</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ZoneAffinityPredicate zoneAffinityPredicate = <span class="keyword">new</span> ZoneAffinityPredicate();</span><br></pre></td></tr></table></figure>
+<p> 这样通过指定过滤条件为后续拓展提供无限可能。事实上后续的其他Filter都有一个对应的Predicate实现。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(PredicateKey input)</span> </span>&#123;</span><br><span class="line">    Server s = input.getServer();</span><br><span class="line">    String az = s.getZone();</span><br><span class="line">    <span class="keyword">if</span> (az != <span class="keyword">null</span> &amp;&amp; zone != <span class="keyword">null</span> &amp;&amp; az.toLowerCase().equals(zone.toLowerCase())) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> zoneAffinityPredicate主要根据zone来将不同的zone过滤出去。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">shouldEnableZoneAffinity</span><span class="params">(List&lt;T&gt; filtered)</span> </span>&#123;    </span><br><span class="line">    <span class="keyword">if</span> (!zoneAffinity &amp;&amp; !zoneExclusive) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (zoneExclusive) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    LoadBalancerStats stats = getLoadBalancerStats();</span><br><span class="line">    <span class="keyword">if</span> (stats == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> zoneAffinity;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        logger.debug(<span class="string">"Determining if zone affinity should be enabled with given server list: &#123;&#125;"</span>, filtered);</span><br><span class="line">        ZoneSnapshot snapshot = stats.getZoneSnapshot(filtered);</span><br><span class="line">        <span class="keyword">double</span> loadPerServer = snapshot.getLoadPerServer();</span><br><span class="line">        <span class="keyword">int</span> instanceCount = snapshot.getInstanceCount();            </span><br><span class="line">        <span class="keyword">int</span> circuitBreakerTrippedCount = snapshot.getCircuitTrippedCount();</span><br><span class="line">        <span class="keyword">if</span> (((<span class="keyword">double</span>) circuitBreakerTrippedCount) / instanceCount &gt;= blackOutServerPercentageThreshold.get() </span><br><span class="line">                || loadPerServer &gt;= activeReqeustsPerServerThreshold.get()</span><br><span class="line">                || (instanceCount - circuitBreakerTrippedCount) &lt; availableServersThreshold.get()) &#123;</span><br><span class="line">            logger.debug(<span class="string">"zoneAffinity is overriden. blackOutServerPercentage: &#123;&#125;, activeReqeustsPerServer: &#123;&#125;, availableServers: &#123;&#125;"</span>, </span><br><span class="line">                    <span class="keyword">new</span> Object[] &#123;(<span class="keyword">double</span>) circuitBreakerTrippedCount / instanceCount,  loadPerServer, instanceCount - circuitBreakerTrippedCount&#125;);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 调用后的结果并不一定有用，还是通过了shouldEnableZoneAffinity来进一步的判断是返回过滤结果还是原样返回，判断标准是过滤后的server：</p>
+<blockquote>
+<p>blackOutServerPercentage：故障实例百分比（断路器断开数 / 实例数量） &gt;= 0.8<br>activeReqeustsPerServer：实例平均负载 &gt;= 0.6<br>availableServers：可用实例数（实例数量 - 断路器断开数） &lt; 2</p>
+</blockquote>
+<p> 其他Filter我就不一一写了，直接引用现成的结论好了。没有再自己去翻一遍源码的必要了。</p>
+<p> 3.2 DefaultNIWSServerListFilter 继承前者，没有任何创新</p>
+<p> 3.3 ServerListSubsetFilter：该过滤器也继承自ZoneAffinityServerListFilter，它非常适用于拥有大规模服务器集群(上百或更多)的系统。因为它可以产生一个“区域感知”结果的子集列表，同时它还能够通过比较服务实例的通信失败数量和并发连接数来判定该服务是否健康来选择性的从服务实例列表中剔除那些相对不够健康的实例。</p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring-Cloud/" rel="tag"><i class="fa fa-tag"></i> Spring Cloud</a>
+          
+            <a href="/tags/Ribbon/" rel="tag"><i class="fa fa-tag"></i> Ribbon</a>
+          
+        </div>
+      
+
+      <div>
+            
+              
+
+            
+      </div>
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/26/Spring-cloud-Ribbon-原理-最通俗版/" rel="next" title="Spring cloud Ribbon 原理最通俗版">
+                <i class="fa fa-chevron-left"></i> Spring cloud Ribbon 原理最通俗版
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/27/Ribbon-LoadBalancer-组件2/" rel="prev" title="Ribbon LoadBalancer 组件2">
+                Ribbon LoadBalancer 组件2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTUxNi8xODA2Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="林兴武">
+            
+              <p class="site-author-name" itemprop="name">林兴武</p>
+              <p class="site-description motion-element" itemprop="description">博客不是收藏夹，所有文章都是原创，记录自己，帮助别人</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/linxingwu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:xingwu_lin@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ILoadBalancer"><span class="nav-number">1.</span> <span class="nav-text">ILoadBalancer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractLoadBalancer"><span class="nav-number">1.1.</span> <span class="nav-text">AbstractLoadBalancer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BaseLoadBalancer"><span class="nav-number">1.1.1.</span> <span class="nav-text">BaseLoadBalancer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DynamicServerListLoadBalancer"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">DynamicServerListLoadBalancer</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林兴武</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

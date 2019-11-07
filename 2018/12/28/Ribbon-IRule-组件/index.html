@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="MBTgt9Mxa-LxR7QuvwTF3yIYs46YcoanpNJXjFqSQAw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring Cloud,Ribbon,IRule,Finchley,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前文说了ILoadbalancer的两个重要实现，这次说一下IRule的主要实现。 按照前文提到过的Ribbon的一贯个性，首先是一个最高级的接口IRule，定义了一些基本的功能。 然后一个抽象实现类AbstractLoadBalancerRule,抽象类增加了一个负载均衡器（服务实例列表）用来实现具体的选择逻辑。 RoundRobinRule然后一个base的实现类，这一层是大多数都有的。但并不">
+<meta name="keywords" content="Spring Cloud,Ribbon,IRule,Finchley">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ribbon IRule 组件">
+<meta property="og:url" content="http://linxingwu.github.io/2018/12/28/Ribbon-IRule-组件/index.html">
+<meta property="og:site_name" content="林兴武的博客">
+<meta property="og:description" content="前文说了ILoadbalancer的两个重要实现，这次说一下IRule的主要实现。 按照前文提到过的Ribbon的一贯个性，首先是一个最高级的接口IRule，定义了一些基本的功能。 然后一个抽象实现类AbstractLoadBalancerRule,抽象类增加了一个负载均衡器（服务实例列表）用来实现具体的选择逻辑。 RoundRobinRule然后一个base的实现类，这一层是大多数都有的。但并不">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-17T17:39:15.416Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ribbon IRule 组件">
+<meta name="twitter:description" content="前文说了ILoadbalancer的两个重要实现，这次说一下IRule的主要实现。 按照前文提到过的Ribbon的一贯个性，首先是一个最高级的接口IRule，定义了一些基本的功能。 然后一个抽象实现类AbstractLoadBalancerRule,抽象类增加了一个负载均衡器（服务实例列表）用来实现具体的选择逻辑。 RoundRobinRule然后一个base的实现类，这一层是大多数都有的。但并不">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://linxingwu.github.io/2018/12/28/Ribbon-IRule-组件/">
+
+
+
+
+
+  <title>Ribbon IRule 组件 | 林兴武的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3db2dd678acf5b830ae79029bad47113";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/linxingwu/linxingwu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林兴武的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linxingwu.github.io/2018/12/28/Ribbon-IRule-组件/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林兴武">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林兴武的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ribbon IRule 组件</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-28T09:30:30+08:00">
+                2018-12-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前文说了ILoadbalancer的两个重要实现，这次说一下IRule的主要实现。</p>
+<p>按照前文提到过的Ribbon的一贯个性，首先是一个最高级的接口IRule，定义了一些基本的功能。</p>
+<p>然后一个抽象实现类AbstractLoadBalancerRule,抽象类增加了一个负载均衡器（服务实例列表）用来实现具体的选择逻辑。</p>
+<h1 id="RoundRobinRule"><a href="#RoundRobinRule" class="headerlink" title="RoundRobinRule"></a>RoundRobinRule</h1><p>然后一个base的实现类，这一层是大多数都有的。但并不是一定有，如果非要套上去的话，我认为应该是RoundRobinRule。它是默认的实现，通过轮询的方式来选择实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">        log.warn(<span class="string">"no load balancer"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Server server = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (server == <span class="keyword">null</span> &amp;&amp; count++ &lt; <span class="number">10</span>) &#123;</span><br><span class="line">        List&lt;Server&gt; reachableServers = lb.getReachableServers();</span><br><span class="line">        List&lt;Server&gt; allServers = lb.getAllServers();</span><br><span class="line">        <span class="keyword">int</span> upCount = reachableServers.size();</span><br><span class="line">        <span class="keyword">int</span> serverCount = allServers.size();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((upCount == <span class="number">0</span>) || (serverCount == <span class="number">0</span>)) &#123;</span><br><span class="line">            log.warn(<span class="string">"No up servers available from load balancer: "</span> + lb);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> nextServerIndex = incrementAndGetModulo(serverCount);</span><br><span class="line">        server = allServers.get(nextServerIndex);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">/* Transient. */</span></span><br><span class="line">            Thread.yield();</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server.isAlive() &amp;&amp; (server.isReadyToServe())) &#123;</span><br><span class="line">            <span class="keyword">return</span> (server);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Next.</span></span><br><span class="line">        server = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (count &gt;= <span class="number">10</span>) &#123;</span><br><span class="line">        log.warn(<span class="string">"No available alive servers after 10 tries from load balancer: "</span></span><br><span class="line">                + lb);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> server;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它的代码很简单，之前也简单提到过，也没什么可深究的，就是遍历。</p>
+<h2 id="WeightedResponseTimeRule"><a href="#WeightedResponseTimeRule" class="headerlink" title="WeightedResponseTimeRule"></a>WeightedResponseTimeRule</h2><p>继承自上一个类，实现了按照响应时间计算权重，然后按照权重选择服务实例的功能。作者对此有一段说明还是很有用的：</p>
+<blockquote>
+<p>Rule that use the average/percentile response times to assign dynamic “weights” per Server which is then used in the “Weighted Round Robin” fashion.<br>The basic idea for weighted round robin has been obtained from JCS The implementation for choosing the endpoint from the list of endpoints is as follows:Let’s assume 4 endpoints:A(wt=10), B(wt=30), C(wt=40), D(wt=20).<br>Using the Random API, generate a random number between 1 and10+30+40+20. Let’s assume that the above list is randomized. Based on the weights, we have intervals as follows:</p>
+</blockquote>
+<blockquote>
+<p>1—–10 (A’s weight)</p>
+</blockquote>
+<blockquote>
+<p>11—-40 (A’s weight + B’s weight) </p>
+</blockquote>
+<blockquote>
+<p>41—-80 (A’s weight + B’s weight + C’s weight) </p>
+</blockquote>
+<blockquote>
+<p>81—-100(A’s weight + B’s weight + C’s weight + C’s weight)</p>
+</blockquote>
+<blockquote>
+<p>Here’s the psuedo code for deciding where to send the request:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (random_number between <span class="number">1</span> &amp; <span class="number">10</span>) &#123;</span><br><span class="line">    send request to A;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (random_number between <span class="number">11</span> &amp; <span class="number">40</span>) &#123;</span><br><span class="line">    send request to B;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (random_number between <span class="number">41</span> &amp; <span class="number">80</span>) &#123;</span><br><span class="line">    send request to C;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (random_number between <span class="number">81</span> &amp; <span class="number">100</span>) &#123;</span><br><span class="line">    send request to D;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>When there is not enough statistics gathered for the servers, this rule will fall back to use RoundRobinRule.</p>
+</blockquote>
+<p>计算思路就是前一个权重作为本server的下限，加上本区间的权重得出server的上限，然后产生一个随机数，落在谁的区间就选择谁。第一个的下限是0.那么权重是怎么计算出来的呢？</p>
+<p>WeightedResponseTimeRule中init时启动了一个定时任务每隔30s运行一次。启动配置部分略过了，直接看定时任务做了什么操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">maintainWeights</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ILoadBalancer lb = getLoadBalancer();</span><br><span class="line">    <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!serverWeightAssignmentInProgress.compareAndSet(<span class="keyword">false</span>,  <span class="keyword">true</span>))  &#123;</span><br><span class="line">        <span class="keyword">return</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        logger.info(<span class="string">"Weight adjusting job started"</span>);</span><br><span class="line">        AbstractLoadBalancer nlb = (AbstractLoadBalancer) lb;</span><br><span class="line">        LoadBalancerStats stats = nlb.getLoadBalancerStats();</span><br><span class="line">        <span class="keyword">if</span> (stats == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// no statistics, nothing to do</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">double</span> totalResponseTime = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// find maximal 95% response time</span></span><br><span class="line">        <span class="keyword">for</span> (Server server : nlb.getAllServers()) &#123;</span><br><span class="line">            <span class="comment">// this will automatically load the stats if not in cache</span></span><br><span class="line">            ServerStats ss = stats.getSingleServerStat(server);</span><br><span class="line">            totalResponseTime += ss.getResponseTimeAvg();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// weight for each server is (sum of responseTime of all servers - responseTime)</span></span><br><span class="line">        <span class="comment">// so that the longer the response time, the less the weight and the less likely to be chosen</span></span><br><span class="line">        Double weightSoFar = <span class="number">0.0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// create new list and hot swap the reference</span></span><br><span class="line">        List&lt;Double&gt; finalWeights = <span class="keyword">new</span> ArrayList&lt;Double&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Server server : nlb.getAllServers()) &#123;</span><br><span class="line">            ServerStats ss = stats.getSingleServerStat(server);</span><br><span class="line">            <span class="keyword">double</span> weight = totalResponseTime - ss.getResponseTimeAvg();</span><br><span class="line">            weightSoFar += weight;</span><br><span class="line">            finalWeights.add(weightSoFar);   </span><br><span class="line">        &#125;</span><br><span class="line">        setWeights(finalWeights);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">"Error calculating server weights"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        serverWeightAssignmentInProgress.set(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先定义了一个double totalResponseTime 用来统计所有服务实例的累积平均响应时间。然后用总的时间-本实例平均响应时间，计算出本实例的权重，也就是说响应时间越久权重越轻。再用一个weightSoFar来计算每一个server的上限，同时也是下一个server的下限。存在一个有序的list中，这样和serverList就能按照index一一对应。</p>
+<p>计算好权重区间之后看看怎么使用的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    Server server = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// get hold of the current reference in case it is changed from the other thread</span></span><br><span class="line">        List&lt;Double&gt; currentWeights = accumulatedWeights;</span><br><span class="line">        <span class="keyword">if</span> (Thread.interrupted()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;Server&gt; allList = lb.getAllServers();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> serverCount = allList.size();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (serverCount == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> serverIndex = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// last one in the list is the sum of all weights</span></span><br><span class="line">        <span class="keyword">double</span> maxTotalWeight = currentWeights.size() == <span class="number">0</span> ? <span class="number">0</span> : currentWeights.get(currentWeights.size() - <span class="number">1</span>); </span><br><span class="line">        <span class="comment">// No server has been hit yet and total weight is not initialized</span></span><br><span class="line">        <span class="comment">// fallback to use round robin</span></span><br><span class="line">        <span class="keyword">if</span> (maxTotalWeight &lt; <span class="number">0.001</span>d || serverCount != currentWeights.size()) &#123;</span><br><span class="line">            server =  <span class="keyword">super</span>.choose(getLoadBalancer(), key);</span><br><span class="line">            <span class="keyword">if</span>(server == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> server;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// generate a random weight between 0 (inclusive) to maxTotalWeight (exclusive)</span></span><br><span class="line">            <span class="keyword">double</span> randomWeight = random.nextDouble() * maxTotalWeight;</span><br><span class="line">            <span class="comment">// pick the server index based on the randomIndex</span></span><br><span class="line">            <span class="keyword">int</span> n = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (Double d : currentWeights) &#123;</span><br><span class="line">                <span class="keyword">if</span> (d &gt;= randomWeight) &#123;</span><br><span class="line">                    serverIndex = n;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    n++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            server = allList.get(serverIndex);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">/* Transient. */</span></span><br><span class="line">            Thread.yield();</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server.isAlive()) &#123;</span><br><span class="line">            <span class="keyword">return</span> (server);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Next.</span></span><br><span class="line">        server = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> server;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>accumulatedWeights 里存的就是定时任务计算的结果。选择的原理就是在[0,最大响应时间)里产生一个随机数，然后遍历accumulatedWeights，如果同index的server的上限&gt;=这个随机数，这个server就是被选中的幸运儿。</p>
+<p>当然也有例外情况，如果发现服务实例数和计算的权重区间数不吻合说明计算出错了，或者累计的响应时间小于0.1说明定时任务还没开始，那就直接调用父类的轮询选择策略。</p>
+<h1 id="RandomRule"><a href="#RandomRule" class="headerlink" title="RandomRule"></a>RandomRule</h1><p>这是一个光杆的base，说它是base因为它位于抽象类下，但是又没有其他人来继承它。毕竟看名字也知道，随机选择一个太没有技术含量，low的很。</p>
+<h1 id="RetryRule"><a href="#RetryRule" class="headerlink" title="RetryRule"></a>RetryRule</h1><p>这个类并没有继承RoundRobinRule，但是它玩了一个代理，代理了RoundRobinRule。然后在实现choose的时候，添加了一个时间限制，默认是500ms，在500ms内轮询选的server如果不好使，还能包换，再选一个，一直循环到找一个好使的。</p>
+<h1 id="ClientConfigEnabledRoundRobinRule"><a href="#ClientConfigEnabledRoundRobinRule" class="headerlink" title="ClientConfigEnabledRoundRobinRule"></a>ClientConfigEnabledRoundRobinRule</h1><p>这个类同样是一个RoundRobinRule的代理类，它甚至没有任何创新，完全使用的RoundRobinRule的规则。那么它有什么存在的价值呢？大佬认为假如我们自己实现了一个Rule，就WeightedResponseTimeRule好了，它现在是你实现的了，你考虑到你的权重区间没计算好或者计算错了的时候要调用父类的备选策略，你就可以继承ClientConfigEnabledRoundRobinRule，抛给它的默认实现。事实上后续的几个高级Rule也是这么操作的。</p>
+<p>但是我就不明白，那我直接继承RoundRobinRule有什么问题呢？何必继承ClientConfigEnabledRoundRobinRule？</p>
+<h2 id="BestAvailableRule"><a href="#BestAvailableRule" class="headerlink" title="BestAvailableRule"></a>BestAvailableRule</h2><p>前者的一个子类，实现的功能就是根据并发请求数量选择最空闲的一个server。代码很简单，没有分析的必要了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (loadBalancerStats == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.choose(key);</span><br><span class="line">    &#125;</span><br><span class="line">    List&lt;Server&gt; serverList = getLoadBalancer().getAllServers();</span><br><span class="line">    <span class="keyword">int</span> minimalConcurrentConnections = Integer.MAX_VALUE;</span><br><span class="line">    <span class="keyword">long</span> currentTime = System.currentTimeMillis();</span><br><span class="line">    Server chosen = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (Server server: serverList) &#123;</span><br><span class="line">        ServerStats serverStats = loadBalancerStats.getSingleServerStat(server);</span><br><span class="line">        <span class="keyword">if</span> (!serverStats.isCircuitBreakerTripped(currentTime)) &#123;</span><br><span class="line">            <span class="keyword">int</span> concurrentConnections = serverStats.getActiveRequestsCount(currentTime);</span><br><span class="line">            <span class="keyword">if</span> (concurrentConnections &lt; minimalConcurrentConnections) &#123;</span><br><span class="line">                minimalConcurrentConnections = concurrentConnections;</span><br><span class="line">                chosen = server;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (chosen == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.choose(key);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chosen;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="PredicateBasedRule"><a href="#PredicateBasedRule" class="headerlink" title="PredicateBasedRule"></a>PredicateBasedRule</h2><p>这在本文中，又是一个递归，这个类是一个抽象类，实现了自定义条件选择server。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PredicateBasedRule</span> <span class="keyword">extends</span> <span class="title">ClientConfigEnabledRoundRobinRule</span> </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Method that provides an instance of &#123;<span class="doctag">@link</span> AbstractServerPredicate&#125; to be used by this class.</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> AbstractServerPredicate <span class="title">getPredicate</span><span class="params">()</span></span>;</span><br><span class="line">        </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Get a server by calling &#123;<span class="doctag">@link</span> AbstractServerPredicate#chooseRandomlyAfterFiltering(java.util.List, Object)&#125;.</span></span><br><span class="line"><span class="comment">     * The performance for this method is O(n) where n is number of servers to be filtered.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        ILoadBalancer lb = getLoadBalancer();</span><br><span class="line">        Optional&lt;Server&gt; server = getPredicate().chooseRoundRobinAfterFiltering(lb.getAllServers(), key);</span><br><span class="line">        <span class="keyword">if</span> (server.isPresent()) &#123;</span><br><span class="line">            <span class="keyword">return</span> server.get();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;       </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>没错，这里没有明显调用过滤条件，真正调用的在AbstractServerPredicate里，我们根据chooseRoundRobinAfterFiltering也能知道，这个方法先过滤，然后过滤结果中轮询一个。以下是过滤的实现<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getEligibleServers</span><span class="params">(List&lt;Server&gt; servers, Object loadBalancerKey)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (loadBalancerKey == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> ImmutableList.copyOf(Iterables.filter(servers, <span class="keyword">this</span>.getServerOnlyPredicate()));            </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        List&lt;Server&gt; results = Lists.newArrayList();</span><br><span class="line">        <span class="keyword">for</span> (Server server: servers) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.apply(<span class="keyword">new</span> PredicateKey(loadBalancerKey, server))) &#123;</span><br><span class="line">                results.add(server);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> results;            </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里Predicate的高级之处前文也提到过，显而易见，典型的模板模式，先定好，咱们都是先过滤，然后再选择，具体怎么过滤，孩子们自己决定，这样以后扩展方便多了。</p>
+<h3 id="AvailabilityFilteringRule"><a href="#AvailabilityFilteringRule" class="headerlink" title="AvailabilityFilteringRule"></a>AvailabilityFilteringRule</h3><p>继承了PredicateBasedRule，看看它是怎么设置Predicate的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">AvailabilityFilteringRule</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">super</span>();</span><br><span class="line">	predicate = CompositePredicate.withPredicate(<span class="keyword">new</span> AvailabilityPredicate(<span class="keyword">this</span>, <span class="keyword">null</span>))</span><br><span class="line">            .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())</span><br><span class="line">            .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码应该也能看明白，就是创建了一个复合的Predicate，先AvailabilityPredicate，然后再加一道没什么意义的过滤，因为后者实际上总是返回true。</p>
+<p>但是注意到，build返回的是一个CompositePredicate，它和Predicate还是有点不同的，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getEligibleServers</span><span class="params">(List&lt;Server&gt; servers, Object loadBalancerKey)</span> </span>&#123;</span><br><span class="line">    List&lt;Server&gt; result = <span class="keyword">super</span>.getEligibleServers(servers, loadBalancerKey);</span><br><span class="line">    Iterator&lt;AbstractServerPredicate&gt; i = fallbacks.iterator();</span><br><span class="line">    <span class="keyword">while</span> (!(result.size() &gt;= minimalFilteredServers &amp;&amp; result.size() &gt; (<span class="keyword">int</span>) (servers.size() * minimalFilteredPercentage))</span><br><span class="line">            &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">        AbstractServerPredicate predicate = i.next();</span><br><span class="line">        result = predicate.getEligibleServers(servers, loadBalancerKey);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到CompositePredicate有一个list的Predicate备选过滤条件，如果上次过滤后剩下的数量和百分比都还理想，它会把所有的备选都拉出来溜溜，直到某一个predicate过滤后数量，百分比不理想了</p>
+<p>我们的重点现在转移到了AvailabilityPredicate，看看它是怎么实现的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(@Nullable PredicateKey input)</span> </span>&#123;</span><br><span class="line">    LoadBalancerStats stats = getLBStats();</span><br><span class="line">    <span class="keyword">if</span> (stats == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> !shouldSkipServer(stats.getSingleServerStat(input.getServer()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">shouldSkipServer</span><span class="params">(ServerStats stats)</span> </span>&#123;        </span><br><span class="line">    <span class="keyword">if</span> ((CIRCUIT_BREAKER_FILTERING.get() &amp;&amp; stats.isCircuitBreakerTripped()) </span><br><span class="line">            || stats.getActiveRequestsCount() &gt;= activeConnectionsLimit.get()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>根据断路器和并发量，选择没有触发断路器，并发量没有超标的server，这个标的默认值是Integer.MAX_VALUE，当然是可以自定义的。</p>
+<p>AvailabilityFilteringRule同时也对choose做出了一些小的贡献<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    Server server = roundRobinRule.choose(key);</span><br><span class="line">    <span class="keyword">while</span> (count++ &lt;= <span class="number">10</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (predicate.apply(<span class="keyword">new</span> PredicateKey(server))) &#123;</span><br><span class="line">            <span class="keyword">return</span> server;</span><br><span class="line">        &#125;</span><br><span class="line">        server = roundRobinRule.choose(key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.choose(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>父类的choose里调用了getEligibleServers，总是在遍历，难免带着老一辈人的落后思想。这里先尝试10次自己的先进思想：轮询，过滤，合适就返回。尝试失败再走父辈留下的后路。</p>
+<h3 id="ZoneAvoidanceRule"><a href="#ZoneAvoidanceRule" class="headerlink" title="ZoneAvoidanceRule"></a>ZoneAvoidanceRule</h3><p>也是一个复合过滤条件，和前文的AvailabilityFilteringRule大同小异了<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> CompositePredicate compositePredicate;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ZoneAvoidanceRule</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    ZoneAvoidancePredicate zonePredicate = <span class="keyword">new</span> ZoneAvoidancePredicate(<span class="keyword">this</span>);</span><br><span class="line">    AvailabilityPredicate availabilityPredicate = <span class="keyword">new</span> AvailabilityPredicate(<span class="keyword">this</span>);</span><br><span class="line">    compositePredicate = createCompositePredicate(zonePredicate, availabilityPredicate);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring-Cloud/" rel="tag"><i class="fa fa-tag"></i> Spring Cloud</a>
+          
+            <a href="/tags/Ribbon/" rel="tag"><i class="fa fa-tag"></i> Ribbon</a>
+          
+            <a href="/tags/IRule/" rel="tag"><i class="fa fa-tag"></i> IRule</a>
+          
+            <a href="/tags/Finchley/" rel="tag"><i class="fa fa-tag"></i> Finchley</a>
+          
+        </div>
+      
+
+      <div>
+            
+              
+
+            
+      </div>
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/27/Ribbon-LoadBalancer-组件2/" rel="next" title="Ribbon LoadBalancer 组件2">
+                <i class="fa fa-chevron-left"></i> Ribbon LoadBalancer 组件2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/28/HystrixCircuitBreaker-源码分析/" rel="prev" title="HystrixCircuitBreaker 源码分析">
+                HystrixCircuitBreaker 源码分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTUxNi8xODA2Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="林兴武">
+            
+              <p class="site-author-name" itemprop="name">林兴武</p>
+              <p class="site-description motion-element" itemprop="description">博客不是收藏夹，所有文章都是原创，记录自己，帮助别人</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/linxingwu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:xingwu_lin@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RoundRobinRule"><span class="nav-number">1.</span> <span class="nav-text">RoundRobinRule</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WeightedResponseTimeRule"><span class="nav-number">1.1.</span> <span class="nav-text">WeightedResponseTimeRule</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RandomRule"><span class="nav-number">2.</span> <span class="nav-text">RandomRule</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RetryRule"><span class="nav-number">3.</span> <span class="nav-text">RetryRule</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ClientConfigEnabledRoundRobinRule"><span class="nav-number">4.</span> <span class="nav-text">ClientConfigEnabledRoundRobinRule</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BestAvailableRule"><span class="nav-number">4.1.</span> <span class="nav-text">BestAvailableRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PredicateBasedRule"><span class="nav-number">4.2.</span> <span class="nav-text">PredicateBasedRule</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AvailabilityFilteringRule"><span class="nav-number">4.2.1.</span> <span class="nav-text">AvailabilityFilteringRule</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ZoneAvoidanceRule"><span class="nav-number">4.2.2.</span> <span class="nav-text">ZoneAvoidanceRule</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林兴武</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

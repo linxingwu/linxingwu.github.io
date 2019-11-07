@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="MBTgt9Mxa-LxR7QuvwTF3yIYs46YcoanpNJXjFqSQAw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="reactiveSteam,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="响应式流响应式流是一种提供具备非阻塞背压的异步流处理倡议。主要应用在运行时环境（JVM,JavaScript）和网络协议中。 需要注意的是流操作的精确特性（转化，分割，合并等）并没有被这个规范包括。响应式流只关心在不同的API组件间调节流数据。在他们的开发中，已经非常细心地确保所有组合流的基本方式都能够被表达。 接口规范响应式流特点  具有处理无限数量的元素的能力； 按序处理； 异步地传递元素；">
+<meta name="keywords" content="reactiveSteam">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactiveStream">
+<meta property="og:url" content="http://linxingwu.github.io/2019/08/27/ReactiveStream/index.html">
+<meta property="og:site_name" content="林兴武的博客">
+<meta property="og:description" content="响应式流响应式流是一种提供具备非阻塞背压的异步流处理倡议。主要应用在运行时环境（JVM,JavaScript）和网络协议中。 需要注意的是流操作的精确特性（转化，分割，合并等）并没有被这个规范包括。响应式流只关心在不同的API组件间调节流数据。在他们的开发中，已经非常细心地确保所有组合流的基本方式都能够被表达。 接口规范响应式流特点  具有处理无限数量的元素的能力； 按序处理； 异步地传递元素；">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://linxingwu.github.io/2019/08/27/images/rs.jpg">
+<meta property="og:updated_time" content="2019-11-03T03:44:18.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactiveStream">
+<meta name="twitter:description" content="响应式流响应式流是一种提供具备非阻塞背压的异步流处理倡议。主要应用在运行时环境（JVM,JavaScript）和网络协议中。 需要注意的是流操作的精确特性（转化，分割，合并等）并没有被这个规范包括。响应式流只关心在不同的API组件间调节流数据。在他们的开发中，已经非常细心地确保所有组合流的基本方式都能够被表达。 接口规范响应式流特点  具有处理无限数量的元素的能力； 按序处理； 异步地传递元素；">
+<meta name="twitter:image" content="http://linxingwu.github.io/2019/08/27/images/rs.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://linxingwu.github.io/2019/08/27/ReactiveStream/">
+
+
+
+
+
+  <title>ReactiveStream | 林兴武的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3db2dd678acf5b830ae79029bad47113";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/linxingwu/linxingwu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林兴武的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linxingwu.github.io/2019/08/27/ReactiveStream/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林兴武">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林兴武的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ReactiveStream</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-27T15:42:05+08:00">
+                2019-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="响应式流"><a href="#响应式流" class="headerlink" title="响应式流"></a>响应式流</h1><p>响应式流是一种提供具备非阻塞背压的异步流处理倡议。主要应用在运行时环境（JVM,JavaScript）和网络协议中。</p>
+<p>需要注意的是流操作的精确特性（转化，分割，合并等）并没有被这个规范包括。响应式流只关心在不同的API组件间调节流数据。在他们的开发中，已经非常细心地确保所有组合流的基本方式都能够被表达。</p>
+<h1 id="接口规范"><a href="#接口规范" class="headerlink" title="接口规范"></a>接口规范</h1><p>响应式流特点</p>
+<ol>
+<li>具有处理无限数量的元素的能力；</li>
+<li>按序处理；</li>
+<li>异步地传递元素；</li>
+<li>必须实现非阻塞的回压（backpressure）。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@startuml</span><br><span class="line">interface Publisher&lt;T&gt;&#123;</span><br><span class="line">+ void subscribe(Subscriber&lt;? super T&gt; subscriber);</span><br><span class="line">&#125;</span><br><span class="line">interface Subscriber&lt;T&gt;&#123;</span><br><span class="line">+  void onSubscribe(Subscription s);</span><br><span class="line">+  void onNext(T t);</span><br><span class="line">+  void onError(Throwable t);</span><br><span class="line">+  void onComplete();</span><br><span class="line">&#125;</span><br><span class="line">interface Subscription&#123;</span><br><span class="line">+  void request(long n);</span><br><span class="line">+  void cancel();</span><br><span class="line">&#125;</span><br><span class="line">interface Processor&lt;T, R&gt;</span><br><span class="line">Publisher  &lt;|-- Processor : 继承</span><br><span class="line">Subscriber &lt;|-- Processor : 继承</span><br><span class="line">@enduml</span><br></pre></td></tr></table></figure>
+<p>处理流程<br><img src="../images/rs.jpg" alt="rs处理流程"></p>
+<blockquote>
+<p><code>onSubscribe onNext* (onError | onComplete)?</code></p>
+</blockquote>
+<p> 这意味着onSubscribe方法总是被调用，后面跟着一个可能的无限数量onNext方法调用（因为订阅者的请求）。如果失败的话，后跟一个onError方法调用，或当没有更多的元素可用时，是一个onComplete方法调用，只要这个Subscription（订阅关系）没有被取消。</p>
+<h1 id="JDK9-实现"><a href="#JDK9-实现" class="headerlink" title="JDK9 实现"></a>JDK9 实现</h1><p> JDK9中 反应式流的默认实现<code>SubmissionPublisher</code></p>
+<ol>
+<li>订阅者向发布者订阅（<code>subscribe</code>）时，发布者会启动一个线程来处理订阅。默认使用<code>ForkJoinPool</code>,也可以指定<code>Executor</code>。</li>
+<li>发布者通过<code>offer</code>,<code>submit</code>方法生产元素,后者是阻塞方法，前者通过<code>timeout</code>或者<code>BiPredicate</code>实现非阻塞。</li>
+<li>发布者从线程池中取出线程向订阅者传递令牌（<code>onSubscribe</code>）。</li>
+<li>发布的元素缓存在每个订阅者对应的发布者缓存队列中。默认队列容量256。</li>
+<li>订阅者通过令牌请求元素（<code>request</code>）。</li>
+<li>当缓存队列满时，发布者可能阻塞，或者重试，或者丢弃元素。</li>
+</ol>
+<h1 id="Reactor-实现"><a href="#Reactor-实现" class="headerlink" title="Reactor 实现"></a>Reactor 实现</h1><p>早期响应式流规范没有提出的时候RxJava是响应式编程的先驱，为异步编程提供了便利。后来响应式流规范出现，RxJava 2在改进RxJava 1的同时尽量向规范靠拢。但是因为历史兼容的原因，很多地方使用得并不直观。Reactor 则是完全基于反应式流规范设计和实现的库，没有 RxJava 那样的历史包袱，在使用上更加的直观易懂。Reactor 也是 Spring 5 中反应式编程的基础。JDK 9 完全移植了Reactor 接口。</p>
+<h2 id="Flux-和-Mono"><a href="#Flux-和-Mono" class="headerlink" title="Flux 和 Mono"></a>Flux 和 Mono</h2><p>Flux 和 Mono 是 Reactor 中的两个基本概念。Flux 表示的是包含 0 到 N 个元素的异步序列。在该序列中可以包含三种不同类型的消息通知：正常的包含元素的消息、序列结束的消息和序列出错的消息。当消息通知产生时，订阅者中对应的方法 onNext(), onComplete()和 onError()会被调用。Mono 表示的是包含 0 或者 1 个元素的异步序列。该序列中同样可以包含与 Flux 相同的三种类型的消息通知。Flux 和 Mono 之间可以进行转换。对一个 Flux 序列进行计数操作，得到的结果是一个 Mono<long>对象。把两个 Mono 序列合并在一起，得到的是一个 Flux 对象。</long></p>
+<h2 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h2><p><code>buffer</code> 把流中元素缓冲到集合中，并把集合返回成为新的流。相当于分组。</p>
+<p><code>filter</code>对流中包含的元素进行过滤，只留下满足 Predicate 指定条件的元素。</p>
+<p><code>window</code>作用类似于 buffer，所不同的是 window 操作符是把当前流中的元素收集到另外的 Flux 序列中</p>
+<p><code>zipWith</code>把当前流中的元素与另外一个流中的元素按照一对一的方式进行合并。在合并时可以不做任何处理，由此得到的是一个元素类型为 Tuple2 的流。</p>
+<p><code>take</code>系列操作符用来从当前流中提取元素。指定提取方式，可以按照时间数量间隔，或者具体判断条件。</p>
+<p><code>reduce</code>累计操作，处理结果和下一元素进行合并。可指定初始值。</p>
+<p><code>merge</code> 两个流合并成为一个流，交叉合并。也可以按流为单位，前后合并。</p>
+<p><code>flatMap</code>把流中的每个元素转换成一个流，再把所有流中的元素进行合并。</p>
+<p><code>concatMap</code>也是把流中的每个元素转换成一个流，再把所有流进行合并。与 <code>flatMap</code> 不同的是，<code>concatMap</code> 会根据原始流中的元素顺序依次把转换之后的流进行合并</p>
+<p><code>combineLatest</code>把所有流中的最新产生的元素合并成一个新的元素，作为返回结果流中的元素。只要其中任何一个流中产生了新的元素，合并操作就会被执行一次，结果流中就会产生新的元素。</p>
+<h2 id="消息处理"><a href="#消息处理" class="headerlink" title="消息处理"></a>消息处理</h2><p>可以通过 <code>subscribe</code> 方法来添加相应的订阅逻辑。指定正常处理逻辑和异常处理逻辑。</p>
+<p>可以通过<code>onErrorReturn</code>来指定发生错误时的默认值。</p>
+<p><code>switchOnError</code>指定发生错误时返回的新流。</p>
+<p><code>onErrorResumeWith</code>根据异常类型，来返回不同的新流。</p>
+<p><code>retry</code>根据指定次数重新订阅流。</p>
+<h2 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h2><p>指定这些操作执行的方式和所在的线程。</p>
+<ul>
+<li>当前线程，通过 <code>Schedulers.immediate()</code>方法来创建。</li>
+<li>单一的可复用的线程，通过<code>Schedulers.single()</code>方法来创建。</li>
+<li>使用弹性的线程池，通过 <code>Schedulers.elastic()</code>方法来创建。线程池中的线程是可以复用的。当所需要时，新的线程会被创建。如果一个线程闲置太长时间，则会被销毁。该调度器适用于 I/O 操作相关的流的处理。</li>
+<li>使用对并行操作优化的线程池，通过 <code>Schedulers.parallel()</code>方法来创建。其中的线程数量取决于 CPU 的核的数量。该调度器适用于计算密集型的流的处理。</li>
+<li>使用支持任务调度的调度器，通过 <code>Schedulers.timer()</code>方法来创建。</li>
+<li>从已有的 <code>ExecutorService</code> 对象中创建调度器，通过 <code>Schedulers.fromExecutorService()</code>方法来创建。</li>
+</ul>
+<p>通过 <code>publishOn()</code>和 <code>subscribeOn()</code>方法可以切换执行操作的调度器。其中 <code>publishOn()</code>方法切换的是操作符的执行方式，而 <code>subscribeOn()</code>方法切换的是产生流中元素时的执行方式。</p>
+<h2 id="“冷”与“热”序列"><a href="#“冷”与“热”序列" class="headerlink" title="“冷”与“热”序列"></a>“冷”与“热”序列</h2><p>冷序列指的是无论订阅者在何时订阅都能看到全部的流元素。热序列指的是订阅者只能看到订阅之后的流元素，订阅前产生的元素会丢失。<code>autoConnect</code>方法生成一个热序列。</p>
+<h1 id="反应式流对比"><a href="#反应式流对比" class="headerlink" title="反应式流对比"></a>反应式流对比</h1><p>composable：组合性，使得各位使用者很便利地使用函数式编程的思想去思考问题。</p>
+<p>lazy:延迟执行</p>
+<p>reusable:可重用</p>
+<p>async:异步执行</p>
+<p>cached:缓存执行结果</p>
+<p>push:push模式</p>
+<p>back-pressure:回压, <em>支持回压的前提是 pipeline 必须是推模型。</em></p>
+<p>operator-fusion:操作符熔合是响应式编程领域最尖端的研究话题之一，它的目的是把数据流中使用的多个操作符以某种方式结合起来，进而降低开销（时间，内存）。用一个操作替换 2 个或更多的相继的操作和一个输出队列的结束操作，和在一个输入队列的开始操作，能够共享一个队列的实例时直接拉取，可以省去<code>request(1)</code>的开销。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">composable</th>
+<th style="text-align:center">lazy</th>
+<th style="text-align:center">reusable</th>
+<th style="text-align:center">async</th>
+<th style="text-align:center">cached</th>
+<th style="text-align:center">push</th>
+<th style="text-align:center">back-pressure</th>
+<th style="text-align:center">operator-fusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">CompletableFuture</td>
+<td style="text-align:center">thenApply?</td>
+<td style="text-align:center">直接执行</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+</tr>
+<tr>
+<td style="text-align:center">Stream</td>
+<td style="text-align:center"><code>filter</code>,<code>map</code>,<code>skip</code>…</td>
+<td style="text-align:center">终止操作</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×<br><code>parallel</code></td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+</tr>
+<tr>
+<td style="text-align:center">Optional</td>
+<td style="text-align:center"><code>map</code>,<code>flatMap</code>,<code>filter</code></td>
+<td style="text-align:center">直接执行</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+</tr>
+<tr>
+<td style="text-align:center">Observable(RxJava1)</td>
+<td style="text-align:center"><code>filter</code>,<code>map</code>,<code>skip</code>…</td>
+<td style="text-align:center">订阅者</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√<br><code>cached</code></td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√<br><code>onBackpressure</code></td>
+<td style="text-align:center">×</td>
+</tr>
+<tr>
+<td style="text-align:center">Observable(RxJava2)</td>
+<td style="text-align:center"><code>filter</code>,<code>map</code>,<code>skip</code>…</td>
+<td style="text-align:center">订阅者</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√<br><code>cached</code></td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">Flowable(RxJava 2)</td>
+<td style="text-align:center"><code>filter</code>,<code>map</code>,<code>skip</code>…</td>
+<td style="text-align:center">订阅者</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√<br><code>cached</code></td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">Flux</td>
+<td style="text-align:center"><code>filter</code>,<code>map</code>,<code>skip</code>…</td>
+<td style="text-align:center">订阅者</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√<br><code>cached</code></td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Observable(RxJava 1), Flowable, Flux</strong> -常用回压策略：</p>
+<ul>
+<li>Buffering - 缓冲所有的 <code>onNext</code> 的值，直到下游消费它们。</li>
+<li>Drop Recent - 如果下游处理速率跟不上，丢弃最近的 <code>onNext</code> 值。</li>
+<li>Use Latest - 如果下游处理速率跟不上，只提供最近的 <code>onNext</code> 值，之前的值会被覆盖。</li>
+<li>None - <code>onNext</code> 事件直接被触发，不做缓冲和丢弃。</li>
+<li>Exception - 如果下游处理跟不上的话，抛出异常。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reactiveSteam/" rel="tag"><i class="fa fa-tag"></i> reactiveSteam</a>
+          
+        </div>
+      
+
+      <div>
+            
+              
+
+            
+      </div>
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/08/Spring-MVC-自定义参数转换/" rel="next" title="Spring MVC 自定义参数转换">
+                <i class="fa fa-chevron-left"></i> Spring MVC 自定义参数转换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/27/AMQP协议/" rel="prev" title="AMQP协议">
+                AMQP协议 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTUxNi8xODA2Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="林兴武">
+            
+              <p class="site-author-name" itemprop="name">林兴武</p>
+              <p class="site-description motion-element" itemprop="description">博客不是收藏夹，所有文章都是原创，记录自己，帮助别人</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/linxingwu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:xingwu_lin@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#响应式流"><span class="nav-number">1.</span> <span class="nav-text">响应式流</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口规范"><span class="nav-number">2.</span> <span class="nav-text">接口规范</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK9-实现"><span class="nav-number">3.</span> <span class="nav-text">JDK9 实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reactor-实现"><span class="nav-number">4.</span> <span class="nav-text">Reactor 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flux-和-Mono"><span class="nav-number">4.1.</span> <span class="nav-text">Flux 和 Mono</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作符"><span class="nav-number">4.2.</span> <span class="nav-text">操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息处理"><span class="nav-number">4.3.</span> <span class="nav-text">消息处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调度器"><span class="nav-number">4.4.</span> <span class="nav-text">调度器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“冷”与“热”序列"><span class="nav-number">4.5.</span> <span class="nav-text">“冷”与“热”序列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反应式流对比"><span class="nav-number">5.</span> <span class="nav-text">反应式流对比</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林兴武</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
