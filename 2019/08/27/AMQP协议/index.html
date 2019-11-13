@@ -89,15 +89,15 @@
 <meta property="og:site_name" content="林兴武的博客">
 <meta property="og:description" content="概览本文基于AMQP v0.9.1  AMQP 解决了什么问题 Our goal is to enable  the development and industry-wide use of standardised messaging middlewaretechnolog   AMQP  creates full functional interoperability  between con">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://linxingwu.github.io/2019/08/27/images/%7B91B5FCFD-6DAE-45D7-A735-76D4426FE9AB%7D_20190621170122.jpg">
+<meta property="og:image" content="http://linxingwu.github.io/2019/08/27/AMQP协议/images/%7B91B5FCFD-6DAE-45D7-A735-76D4426FE9AB%7D_20190621170122.jpg">
 <meta property="og:image" content="http://linxingwu.github.io/2019/08/27/images/%7B02654EEB-042D-4335-B213-D3E100D043ED%7D_20190621173705.jpg">
 <meta property="og:image" content="http://linxingwu.github.io/2019/08/27/images/%7B04AD3FFD-A3F2-44AC-AB50-575CC4B12BB5%7D_20190624094329.jpg">
 <meta property="og:image" content="http://linxingwu.github.io/2019/08/27/images/%7BFEB2A73F-99CC-480A-BAB3-59A46597DB34%7D_20190624170033.jpg">
-<meta property="og:updated_time" content="2019-11-03T03:44:18.604Z">
+<meta property="og:updated_time" content="2019-11-07T12:02:27.529Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AMQP协议">
 <meta name="twitter:description" content="概览本文基于AMQP v0.9.1  AMQP 解决了什么问题 Our goal is to enable  the development and industry-wide use of standardised messaging middlewaretechnolog   AMQP  creates full functional interoperability  between con">
-<meta name="twitter:image" content="http://linxingwu.github.io/2019/08/27/images/%7B91B5FCFD-6DAE-45D7-A735-76D4426FE9AB%7D_20190621170122.jpg">
+<meta name="twitter:image" content="http://linxingwu.github.io/2019/08/27/AMQP协议/images/%7B91B5FCFD-6DAE-45D7-A735-76D4426FE9AB%7D_20190621170122.jpg">
 
 
 
@@ -359,7 +359,7 @@
 <p>实现标准中间件应用的开发和工业范围内的应用。这将会降低企业系统整合的成本，并且为受众提供工业级的整合。</p>
 <p>AMQP 实现了协议实现者和消息中间件之间的全功能互通性。</p>
 <p>不同系统之间的互通性需要<code>网络协议</code>和明确语义的<code>服务端行为</code>共同协作。amqp既定义了网络协议也通过一些列组件（<code>AMQ model</code>）定义了消息传递的能力。</p>
-<h2 id="AMQP-的层次结构"><a href="#AMQP-的层次结构" class="headerlink" title="AMQP 的层次结构"></a>AMQP 的层次结构</h2><p><img src="../images/{91B5FCFD-6DAE-45D7-A735-76D4426FE9AB}_20190621170122.jpg" alt="AMQP层次结构"><br>功能层定义了一些代表功能组合的客户端命令。<br>传输层在应用和服务之间传输方法，同时也处理通道复用，帧同步, 内容编码,心跳检测, 以及数据表示和错误处理。<br>和单向的RPC调用不同，AMQP的调用是双向的，应用可以向服务器发送命令，服务器也可以反过来。</p>
+<h2 id="AMQP-的层次结构"><a href="#AMQP-的层次结构" class="headerlink" title="AMQP 的层次结构"></a>AMQP 的层次结构</h2><p><img src="images/{91B5FCFD-6DAE-45D7-A735-76D4426FE9AB}_20190621170122.jpg" alt="AMQP层次结构"><br>功能层定义了一些代表功能组合的客户端命令。<br>传输层在应用和服务之间传输方法，同时也处理通道复用，帧同步, 内容编码,心跳检测, 以及数据表示和错误处理。<br>和单向的RPC调用不同，AMQP的调用是双向的，应用可以向服务器发送命令，服务器也可以反过来。</p>
 <p>传输层和功能层并不是紧密相关联的，可以在不改变功能层的情况下使用别的传输层来替代amqp的传输层，也可以将传输层应用到其他高级协议上。</p>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>规模上的伸缩性，通过服务器纵向拓展能提供1 message/s到100k message/s的传输速度。<br>提供丰富的功能，包括一读多写的存储转发；多对多的负载均衡，发布订阅，基于内容的路由，队列文件传输；点对点连接；在多源多消费的情况下推销数据分布（Market data distribution with many sources and many readers）</p>
 <h1 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h1><h2 id="实体（AMQ-Model）架构"><a href="#实体（AMQ-Model）架构" class="headerlink" title="实体（AMQ Model）架构"></a>实体（AMQ Model）架构</h2><p><img src="../images/{02654EEB-042D-4335-B213-D3E100D043ED}_20190621173705.jpg" alt="AMQ Model"></p>
@@ -868,7 +868,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

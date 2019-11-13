@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://linxingwu.github.io/2019/11/13/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/</loc>
+    
+    <lastmod>2019-11-13T12:52:41.654Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://linxingwu.github.io/2019/08/27/AMQP%E5%8D%8F%E8%AE%AE/</loc>
+    
+    <lastmod>2019-11-07T12:02:27.529Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://linxingwu.github.io/2019/10/18/Redis/</loc>
     
     <lastmod>2019-11-07T11:57:03.751Z</lastmod>
@@ -23,9 +37,9 @@
   </url>
   
   <url>
-    <loc>http://linxingwu.github.io/2019/08/27/AMQP%E5%8D%8F%E8%AE%AE/</loc>
+    <loc>http://linxingwu.github.io/tags/index.html</loc>
     
-    <lastmod>2019-11-03T03:44:18.604Z</lastmod>
+    <lastmod>2019-05-17T17:39:15.420Z</lastmod>
     
   </url>
   
@@ -38,13 +52,6 @@
   
   <url>
     <loc>http://linxingwu.github.io/categories/index.html</loc>
-    
-    <lastmod>2019-05-17T17:39:15.420Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://linxingwu.github.io/tags/index.html</loc>
     
     <lastmod>2019-05-17T17:39:15.420Z</lastmod>
     
@@ -65,14 +72,14 @@
   </url>
   
   <url>
-    <loc>http://linxingwu.github.io/2019/01/08/Spring-MVC-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%82%E6%95%B0%E8%BD%AC%E6%8D%A2/</loc>
+    <loc>http://linxingwu.github.io/2018/12/27/Ribbon-LoadBalancer-%E7%BB%84%E4%BB%B62/</loc>
     
     <lastmod>2019-05-17T17:39:15.418Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://linxingwu.github.io/2018/12/27/Ribbon-LoadBalancer-%E7%BB%84%E4%BB%B62/</loc>
+    <loc>http://linxingwu.github.io/2019/01/08/Spring-MVC-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%82%E6%95%B0%E8%BD%AC%E6%8D%A2/</loc>
     
     <lastmod>2019-05-17T17:39:15.418Z</lastmod>
     
@@ -86,14 +93,14 @@
   </url>
   
   <url>
-    <loc>http://linxingwu.github.io/2018/12/11/Mac%E5%A4%87%E4%BB%BD%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BANTFS/</loc>
+    <loc>http://linxingwu.github.io/2018/12/28/Ribbon-IRule-%E7%BB%84%E4%BB%B6/</loc>
     
     <lastmod>2019-05-17T17:39:15.416Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://linxingwu.github.io/2018/12/28/Ribbon-IRule-%E7%BB%84%E4%BB%B6/</loc>
+    <loc>http://linxingwu.github.io/2018/12/11/Mac%E5%A4%87%E4%BB%BD%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BANTFS/</loc>
     
     <lastmod>2019-05-17T17:39:15.416Z</lastmod>
     
