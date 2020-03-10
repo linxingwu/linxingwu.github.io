@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="MBTgt9Mxa-LxR7QuvwTF3yIYs46YcoanpNJXjFqSQAw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT, Java">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Java 8JDK8 发布于2014年3月，Oracle 在 2019 年 1 月停止免费商用更新。 Lambda 和函数式接口lambda表达式是Java8 中最重大的改变，其允许将函数当成参数传递给某些方法，或者将程序当作处理对象。最简单的Lambda表达式可由逗号分隔的参数列表、-&amp;gt;符号和语句块组成。1Arrays.asList( &quot;a&quot;, &quot;b&quot;, &quot;d&quot; ).forEach( e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK版本更新特性">
+<meta property="og:url" content="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/index.html">
+<meta property="og:site_name" content="林兴武的博客">
+<meta property="og:description" content="Java 8JDK8 发布于2014年3月，Oracle 在 2019 年 1 月停止免费商用更新。 Lambda 和函数式接口lambda表达式是Java8 中最重大的改变，其允许将函数当成参数传递给某些方法，或者将程序当作处理对象。最简单的Lambda表达式可由逗号分隔的参数列表、-&amp;gt;符号和语句块组成。1Arrays.asList( &quot;a&quot;, &quot;b&quot;, &quot;d&quot; ).forEach( e">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/image001.png">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/Shenandoah.png">
+<meta property="og:updated_time" content="2020-03-10T09:43:35.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JDK版本更新特性">
+<meta name="twitter:description" content="Java 8JDK8 发布于2014年3月，Oracle 在 2019 年 1 月停止免费商用更新。 Lambda 和函数式接口lambda表达式是Java8 中最重大的改变，其允许将函数当成参数传递给某些方法，或者将程序当作处理对象。最简单的Lambda表达式可由逗号分隔的参数列表、-&amp;gt;符号和语句块组成。1Arrays.asList( &quot;a&quot;, &quot;b&quot;, &quot;d&quot; ).forEach( e">
+<meta name="twitter:image" content="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/image001.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/">
+
+
+
+
+
+  <title>JDK版本更新特性 | 林兴武的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3db2dd678acf5b830ae79029bad47113";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/linxingwu/linxingwu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林兴武的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linxingwu.github.io/2020/01/16/JDK版本更新特性/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林兴武">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林兴武的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JDK版本更新特性</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-16T14:30:27+08:00">
+                2020-01-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Java-8"><a href="#Java-8" class="headerlink" title="Java 8"></a>Java 8</h1><p>JDK8 发布于2014年3月，Oracle 在 2019 年 1 月停止免费商用更新。</p>
+<h2 id="Lambda-和函数式接口"><a href="#Lambda-和函数式接口" class="headerlink" title="Lambda 和函数式接口"></a>Lambda 和函数式接口</h2><p>lambda表达式是Java8 中最重大的改变，其允许将函数当成参数传递给某些方法，或者将程序当作处理对象。最简单的Lambda表达式可由逗号分隔的参数列表、-&gt;符号和语句块组成。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Arrays.asList( <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"d"</span> ).forEach( e -&gt; System.out.println( e ) );</span><br></pre></td></tr></table></figure></p>
+<p>lambda表达式中复杂语句块需要使用花括号包裹；可以引用类成员和局部变量，这些被引用的对象会被隐式转换为<code>final</code>的；只有一行的语句可以省略<code>return</code>;参数和返回值类型都自动推断。</p>
+<p>lambda表达式配合方法引用可以实现更加简洁高效的代码。方法引用包含4中类型：</p>
+<ol>
+<li>构造器引用，Class::new</li>
+<li>静态方法引用，Class::static_method</li>
+<li>成员方法引用，Class::method</li>
+<li>实例对象的方法引用，instance::method</li>
+</ol>
+<p>为了让现有的功能更好的和lambda函数兼容，产生了函数式接口的概念。函数式接口指的是只有一个方法的接口。这样的接口可以转化为lambda表达式。为了增加函数式接口的健壮性，可以通过在接口声明上增加<code>@FunctionalInterface</code>注解表明函数是一个函数式接口。默认方法和静态方法不会导致函数式接口被破坏。</p>
+<h2 id="接口静态方法和默认方法"><a href="#接口静态方法和默认方法" class="headerlink" title="接口静态方法和默认方法"></a>接口静态方法和默认方法</h2><p>默认方法适用于接口增加新方法，但是无法改动已存在的实现的情况，实现类不必实现新增加的默认方法。该特性在官方库中的应用是：给<code>java.util.Collection</code>接口添加新方法，如<code>stream()</code>、<code>parallelStream()</code>、<code>forEach()</code>和<code>removeIf()</code>等等。由于JVM上的默认方法的实现在字节码层面提供了支持，因此效率非常高。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">interface</span> <span class="title">Defaulable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 接口现在可以添加默认方法，实现者可以覆写这些方法，也可以不覆写</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> String <span class="title">notRequired</span><span class="params">()</span> </span>&#123; </span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Default implementation"</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 接口现在可以添加静态方法</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> Defaulable <span class="title">create</span><span class="params">( Supplier&lt; Defaulable &gt; supplier )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> supplier.get();</span><br><span class="line">    &#125;        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="重复注解"><a href="#重复注解" class="headerlink" title="重复注解"></a>重复注解</h2><p>JDK 1.5 引入注解，但是不允许在同一个地方多次使用同一个注解。JDK 8 中增加了<code>@Repeatable</code>注解，来使目标注解变得可以重复使用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>( ElementType.TYPE )</span><br><span class="line"><span class="meta">@Retention</span>( RetentionPolicy.RUNTIME )</span><br><span class="line"><span class="meta">@Repeatable</span>( Filters.class )</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Filter &#123;</span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>除此之外JDK 8 还增强了类型推断和注解的使用范围。</p>
+<h2 id="参数名称"><a href="#参数名称" class="headerlink" title="参数名称"></a>参数名称</h2><p>在编译器编译时候指定参数<code>-parameters</code>可以保留源码中参数的名称，随后通过反射可以获取到这个名称。否则参数名称会被<code>arg0</code>,<code>arg1</code>之类无意义的标识符代替。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Parameter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParameterNames</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Method method = ParameterNames.class.getMethod( <span class="string">"main"</span>, String[].class );</span><br><span class="line">        <span class="keyword">for</span>( <span class="keyword">final</span> Parameter parameter: method.getParameters() ) &#123;</span><br><span class="line">            System.out.println( <span class="string">"Parameter: "</span> + parameter.getName() );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="工具类"><a href="#工具类" class="headerlink" title="工具类"></a>工具类</h2><p><code>Optional</code>类增强了对空值的处理，可以避免大多数的非空判断以增加代码的简洁性。</p>
+<p><code>java.util.stream</code>类是对集合操作的一个极大增强，也可以应用于数据流中。Steam之上的操作可分为中间操作和终止操作。所有的中间操作并不会立刻执行，所有的操作只有在遇到终止操作的时候才会被触发。</p>
+<p>Date/Time API 吸收了Joda-Time的精华，将日期相关类设置为不可变对象，当需要修改时会返回新的对象。新的java.time包包含了所有关于日期、时间、时区、Instant（跟日期类似但是精确到纳秒）、duration（持续时间）和时钟操作的类。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>Nashorn JavaScript引擎，Nashorn JavaScript引擎是<code>javax.script.ScriptEngine</code>的另一个实现版本。使得Java代码可以调用JS代码。</p>
+<p>新增了Base64，成为官方库文件。</p>
+<p>parallexXxx系列方法，增加多核机器数组排序速度。</p>
+<p><code>java.util.concurrent.ConcurrentHashMap</code>针对lambda进行优化，内部使用红黑树替代了之前的链表实现。<code>java.util.concurrent.locks.StampedLock</code>优化了原来的读写锁，增加了读写锁之间状态的转换，用于支持基于容量的锁。<code>java.util.concurrent.atomic</code>包中新增了一些类。</p>
+<h2 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h2><p>使用Metaspace（JEP 122）代替持久代（PermGen space）。在JVM参数方面，使用-XX:MetaSpaceSize和-XX:MaxMetaspaceSize代替原来的-XX:PermSize和-XX:MaxPermSize。</p>
+<h1 id="Java-9"><a href="#Java-9" class="headerlink" title="Java 9"></a>Java 9</h1><p>Java 9 正式发布于 2017年9月21日。其中最重要的改动是 Java 平台模块系统的引入。</p>
+<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>在引入了模块系统之后，JDK 被重新组织成 94 个模块。Java 应用可以通过新增的 jlink 工具，创建出只包含所依赖的 JDK 模块的自定义运行时镜像。这样可以极大的减少 Java 运行时环境的大小。模块化的控制通过在一个工件的根目录建立一个module-info.java，由其编译而来。工件的格式可以是传统的 JAR 文件或是 Java 9 新增的 JMOD 文件。</p>
+<p>模块文件的规则包括：</p>
+<ol>
+<li>模块导出的包：使用 exports 可以声明模块对其他模块所导出的包。包中的 public 和 protected 类型，以及这些类型的 public 和 protected 成员可以被其他模块所访问。没有声明为导出的包相当于模块中的私有成员，不能被其他模块使用。</li>
+<li>模块的依赖关系：使用 requires 可以声明模块对其他模块的依赖关系。使用 requires transitive 可 以把一个模块依赖声明为传递的。传递的模块依赖可以被依赖当前模块的其他模块所读取。 如果一个模块所导出的类型中包含了来自它所依赖的模块的类型，那么对该模块的依赖应该声明为传递的。</li>
+<li>服务的提供和使用：如果一个模块中包含了可以被 ServiceLocator 发现的服务接口的实现 ，需要使用 provides with 语句来声明具体的实现类 ；如果一个模块需要使用服务接口，可以使用 uses 语句来声明。</li>
+</ol>
+<h2 id="JShell"><a href="#JShell" class="headerlink" title="JShell"></a>JShell</h2><p>jshell 是 Java 9 新增的一个实用工具。jshell 为 Java 增加了类似 NodeJS 和 Python 中的读取-求值-打印循环(Read-Evaluation-Print Loop)。在 jshell 中 可以直接 输入表达式并查看其执行结果。jsell中每个表达式的结果会被自动保存下来，以数字编号作为引用，类似 $1 和$2 这样的名称。可以在后续的表达式中引用之前语句的运行结果。在 jshell 中 ，除了表达式之外，还可以创建 Java 类和方法。jshell 也有基本的代码完成功能。</p>
+<h2 id="集合工具类"><a href="#集合工具类" class="headerlink" title="集合工具类"></a>集合工具类</h2><p>Java 9 增加 了 <code>List.of()</code>、<code>Set.of()</code>、<code>Map.of()</code> 和 <code>Map.ofEntries()</code>等工厂方法来创建不可变集合。 </p>
+<p><code>Stream</code> 中增加了新的方法 <code>ofNullable</code>、<code>dropWhile</code>、<code>takeWhile</code> 和 <code>iterate</code>。</p>
+<p><code>Collectors</code> 中增加了新的方法 <code>filtering</code> 和 <code>flatMapping</code>。</p>
+<p><code>Optional</code>类中新增了 <code>ifPresentOrElse</code>、<code>or</code> 和 <code>stream</code> 等方法。</p>
+<h2 id="平台日志管理"><a href="#平台日志管理" class="headerlink" title="平台日志管理"></a>平台日志管理</h2><p>新增了<code>System.LoggerFinder</code>用来管理JDK使用的日志记录器实现，JVM在运行期间通过<code>LoggerFinder</code>在系统范围内寻找日志记录器的实现，默认情况下使用<code>java.logging</code>模块下的<code>java.util.logging</code>来实现。应用程序可以使用系统内置的日志记录器实现。也可以自定义<code>LoggerFinder</code>来修改JDK自带的日志记录器。</p>
+<h2 id="反应式流"><a href="#反应式流" class="headerlink" title="反应式流"></a>反应式流</h2><p>反应式流指的式一个带有非阻塞被压得异步流处理规范，在Java平台上流行的反应式库有RxJava和Reactor。反应式流规范的核心接口已经添加到了 Java9 中的<code>java.util.concurrent.Flow</code> 类中。其中包含了 <code>Flow.Publisher</code>、<code>Flow.Subscriber</code>、<code>Flow.Subscription</code> 和 <code>Flow.Processor</code> 等 4 个核心接口。Java 9 还提供了 <code>SubmissionPublisher</code> 作为 <code>Flow.Publisher</code> 的一个实现。</p>
+<h2 id="反射句柄"><a href="#反射句柄" class="headerlink" title="反射句柄"></a>反射句柄</h2><p>新增了<code>java.lang.invoke.VarHandle</code>类用来指代类中变量，并且提供了包括对变量进行读取、写入、原子更新、数值原子更新和比特位原子操作等操作。<code>VarHandle</code>可以通过<code>java.lang.invoke.MethodHandles.Lookup</code>中的静态工厂方法来创建 。</p>
+<p><code>java.lang.invoke.MethodHandles</code>中新增了不同的静态方法来创建方法句柄。包括：</p>
+<ol>
+<li>arrayConstructor：创建指定类型的数组。</li>
+<li>arrayLength：获取指定类型的数组的大小。</li>
+<li>varHandleInvoker 和 varHandleExactInvoker：调用 VarHandle 中的访问模式方法。</li>
+<li>zero：返回一个类型的默认值。</li>
+<li>empty：返 回 MethodType 的返回值类型的默认值。</li>
+<li>loop、countedLoop、iteratedLoop、whileLoop 和 doWhileLoop：创建不同类型的循环，包括 for 循环、while 循环 和 do-while 循环。</li>
+<li>tryFinally：把对方法句柄的调用封装在 try-finally 语句中。</li>
+</ol>
+<h2 id="其他-1"><a href="#其他-1" class="headerlink" title="其他"></a>其他</h2><p><code>CompletableFuture</code>类增加了新的方法。<code>completeAsync</code> 使用一个异步任务来获取结果并完成该 <code>CompletableFuture</code>。<code>orTimeout</code> 在 <code>CompletableFuture</code> 没有在给定的超时时间之前完成时抛出 <code>TimeoutException</code> 异常来终止任务。<code>completeOnTimeout</code> 与 <code>orTimeout</code> 类似，只不过它在超时时使用给定的值来完成 <code>CompletableFuture</code>。</p>
+<p><code>java.io.InputStream</code>增加了新的方法。<code>readAllBytes</code>读取 InputStream 中的所有剩余字节。<code>readNBytes</code>从 <code>InputStream</code> 中读取指定数量的字节到数组中。<code>transferTo</code>读取 <code>InputStream</code> 中的全部字节并写入到指定的 <code>OutputStream</code> 中 。</p>
+<p>优化了Nashorn 引擎，支持了ECMAScript 6规范。Nashorn 还提供了 API 把 ECMAScript 源代码解析成抽象语法树，可以用来对 ECMAScript 源代码进行分析。</p>
+<p>增加了<code>java.net.http</code>包，用于支持HTTP/1和HTTP/2以及websocket访问。</p>
+<p>Java 9 移除了在 Java 8 中 被废弃的垃圾回收器配置组合，同时 把 G1 设为默认的垃圾回收器实现。另外，CMS 垃圾回收器已经被声明为废弃。Java 9 也增加了很多可以通过 jcmd 调用的诊断命令。</p>
+<p>Java 9 允许在接口中使用私有方法。 在try-with-resources 语句中可以使用 effectively-final 变量。 </p>
+<p>Java 9 把对 Unicode 的支持升级到了 8.0。</p>
+<p>ResourceBundle 加载属性文件的默认编码从 ISO-8859-1 改成了 UTF-8，不再需要使用 native2ascii 命令来对属性文件进行额外处理。</p>
+<p>注解<code>@Deprecated</code>增加了 <code>since</code> 和 <code>forRemoval</code> 两 个属性，可以分别指定一个程序元素被废弃的版本，以及是否会在今后的版本中被删除。</p>
+<h1 id="Java-10"><a href="#Java-10" class="headerlink" title="Java 10"></a>Java 10</h1><p>Java 10 发布于2018年3月21日。其中最备受广大开发者关注的莫过于局部变量类型推断。自Java 5引入泛型之后，Java 7 泛型实现了部分的类型推断，在声明变量时可以直接使用&lt;&gt;而不指定泛型。Java 8中lambda入参和返回值实际上也由类型推断来确定其类型。</p>
+<h2 id="局部变量类型推断"><a href="#局部变量类型推断" class="headerlink" title="局部变量类型推断"></a>局部变量类型推断</h2><p>局部变量类型推断，允许开发人员省略一些不必要的局部变量类型初始化声明。降低语法冗余度的同时保持静态类型的安全性。其主要实现是引入了保留字var。但是这种var变量的类型推断同时也有局限，仅限于有初始化器的变量类型，增强for循环中的索引变量以及传统for循环中的局部变量。不能推断入参和返回值的类型，不能推断属性，和其他任何类型的变量声明。最为关键的一点，不使用类型推断会提供极大的程序可读性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> list = <span class="keyword">new</span> ArrayList&lt;String&gt;(); <span class="comment">// ArrayList&lt;String&gt;</span></span><br><span class="line"><span class="keyword">var</span> stream = list.stream(); <span class="comment">// Stream&lt;String&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h2><p>目前的GC实现分布于不同的模块中，为了使所有的GC条理清晰易于拓展，需要整合并清理GC。Java 10 引入了纯净的GC接口，并将各种GC通用的部分重构并入了工具类部分，以更好的实现不同的GC隔离。</p>
+<p>G1 收集器是Java 9 中hotspot的默认垃圾收集器，其通过一种尝试并行的策略降低full gc 出现的概率，但是尝试失败后触发垃圾收集器退回进行full gc。在之前的Java版本中G1进行垃圾回收时是基于单线程的标记压缩算法。Java 10 中引入了多线程并行GC，同时使用于年轻代回收和混合回收相同的并行工作线程数量，从而较少full gc 发生的概率，以提升性能和吞吐量。Java 10 中采用了并行的标记压缩算法。GC线程的数量可以通过<code>-XX：ParallelGCThreads</code>参数来进行调节。</p>
+<h2 id="应用程序类数据-AppCDS-共享"><a href="#应用程序类数据-AppCDS-共享" class="headerlink" title="应用程序类数据 (AppCDS) 共享"></a>应用程序类数据 (AppCDS) 共享</h2><p>JDK 5 引入了数据共享机制，允许将JDK必须包通过共享文档的形式共享给不同的虚拟机实例，以使得后者在启动时不再重新加载，进而节约内存空间提升启动速度。Java 10 在此基础上允许引用类的共享。</p>
+<p>在启动时记录加载类的过程，写入到文本文件中，再次启动时直接读取此启动文本并加载。如果应用环境没有大的变化，启动速度就会得到提升。整个过程类似于PC的休眠，将PC的运行环境写入到磁盘，再次使用时直接读取文件。</p>
+<p>对于大型企业级应用以及微服务应用来说，其在启动时都会载入成千上万的类到应用程序类加载器。使用AppCDS会让这些服务快速启动并改善系统的响应时间。</p>
+<h2 id="Graal-GIT编译器"><a href="#Graal-GIT编译器" class="headerlink" title="Graal GIT编译器"></a>Graal GIT编译器</h2><p>Java 10 新增了基于Java的GIT编译器Graal，使用 Java 9 中引入的JVM编译器接口（JVMCI）。并作为了linux/X64平台的实验性GIT编译器。</p>
+<p>Graal是一个以Java为主要编程语言，主要面向Java字节码的编译器，与C++实现的C1、C2相比，其模块化更为明显，更容易维护。Graal可以作为动态编译器，也可以作为静态编译器实现AOT编译。Graal性能能与C++编译器匹敌，甚至有希望超过C++。</p>
+<h2 id="其他-2"><a href="#其他-2" class="headerlink" title="其他"></a>其他</h2><p><code>-XX:ThreadLocalHandshakes</code>参数开启了线程的握手功能，能允许在不运行全局安全点的时候实现线程回调。此功能能够对JVM的单个线程进行控制。提升JVM功能的性能开销。</p>
+<p>扩展了Unicode语言标签。通过<code>java.time.format.DateTimeFormatter::localizedBy</code>方法，可以采用某种数字样式，区域定义或者时区来获得时间信息所需的语言地域本地环境信息。</p>
+<p>当操作系统通过文件系统提供了使用非DRAM内存的方法的时候，JVM可以将堆内存分配在不同的备用设备上。通过<code>-XX：AllocateHeapAt = &lt;path&gt;</code>参数进行控制。</p>
+<p>Java 9 命令<code>keytool -cacerts</code>命令可以查看根证书，但是Java 9 中没有添加任何证书。在Java 10 中根据Oracle 开源出Oracle JavaSE中的cacerts信息，在 OpenJDK 中提供80条默认的根证书颁发机构。</p>
+<p>从Java 10开始，JDK发布频率调整为每半年发布一个大版本，每个季度发布一个中间特性版本。Java 10 中将重新编写之前 JDK 版本中引入的版本号方案，将使用基于时间模型定义的版本号格式来定义新版本。使用格式为</p>
+<blockquote>
+<p>\$FEATURE.\$INTERIM.\$UPDATE.\$PATCH</p>
+</blockquote>
+<p>$FEATURE，每次版本发布加 1，不考虑具体的版本内容。</p>
+<p>$INTERIM，中间版本号，在大版本中间发布的，包含问题修复和增强的版本，不会引入非兼容性修改。</p>
+<h1 id="Java-11"><a href="#Java-11" class="headerlink" title="Java 11"></a>Java 11</h1><p>Java 11 发布于2018年9月25日。是Java 8后又一个长期支持的Java版本。</p>
+<h2 id="标准HTTP-Client升级"><a href="#标准HTTP-Client升级" class="headerlink" title="标准HTTP Client升级"></a>标准HTTP Client升级</h2><p>Java 11 对Java 9 引入的Http Client API 进行了优化，现在完全支持异步非阻塞。新版本的HTTP Client 通过<code>CompleteableFutures</code>实现的阻塞响应功能，并且可以联合使用触发相应的动作。并且吸收了响应式流的概念,其中广泛使用了Java Flow API。</p>
+<p>提供了对 HTTP/2 等业界前沿标准的支持，同时也向下兼容 HTTP/1.1，精简而又友好的 API 接口，与主流开源 API（如：Apache HttpClient、Jetty、OkHttp 等）类似甚至拥有更高的性能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">HttpClient client = HttpClient.newHttpClient();</span><br><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">      .uri(URI.create(<span class="string">"http://openjdk.java.net/"</span>))</span><br><span class="line">      .build();</span><br><span class="line">client.sendAsync(request, BodyHandlers.ofString())</span><br><span class="line">      .thenApply(HttpResponse::body)</span><br><span class="line">      .thenAccept(System.out::println)</span><br><span class="line">      .join();</span><br></pre></td></tr></table></figure>
+<h2 id="No-op垃圾收集器-Epsilon"><a href="#No-op垃圾收集器-Epsilon" class="headerlink" title="No-op垃圾收集器 Epsilon"></a>No-op垃圾收集器 Epsilon</h2><p>Epsilon 垃圾回收器的目标是开发一个控制内存分配，但是不执行任何实际的垃圾回收工作（no-op）。它提供一个完全消极的 GC 实现，分配有限的内存资源，最大限度的降低内存占用和内存吞吐延迟时间。一旦堆内存耗尽，JVM就会退出。通过<code>-XX:+UseEpsilonGC</code>开启。</p>
+<p>这种垃圾收集器适用于：</p>
+<ol>
+<li>性能测试。no-op则不会因为GC而引起性能损耗。</li>
+<li>内存压力测试。内存耗尽时候JVM会退出，可以帮助确定内存的阈值。</li>
+<li>VM 接口测试。这是一个最简单的VM GC实现。</li>
+<li>短暂的job任务。短生命周期的任务退出时会直接销毁栈信息，此时不必进行常规GC。</li>
+<li>延迟改进。对于内存控制严格，几乎不存在垃圾回收的应用。常规GC会增加消耗，但是无意义。</li>
+<li>吞吐改进。传统GC分代工作，会存在锁。对于无需分配内存的应用，避免这个锁提升了性能。</li>
+</ol>
+<h2 id="可伸缩低延迟垃圾收集器ZGC"><a href="#可伸缩低延迟垃圾收集器ZGC" class="headerlink" title="可伸缩低延迟垃圾收集器ZGC"></a>可伸缩低延迟垃圾收集器ZGC</h2><p>ZGC 是一个可伸缩的、低延迟的垃圾收集器，主要为了满足如下目标进行设计：</p>
+<ol>
+<li>GC 停顿时间不超过 10ms</li>
+<li>既能处理几百 MB 的小堆，也能处理几个 TB 的大堆</li>
+<li>应用吞吐能力不会下降超过 15%（与 G1 回收算法相比）</li>
+<li>方便在此基础上引入新的 GC 特性和利用 colord</li>
+<li>针以及 Load barriers 优化奠定基础</li>
+<li>当前只支持 Linux/x64 位平台</li>
+</ol>
+<p>10ms的停顿延迟实际上是堆ZGC的保守估计，即使是10ms也已经是传统GC不能达到的极限。根据 SPECjbb 2015 的基准测试，128G 的大堆下ZGC最大停顿时间才 1.68ms，远低于 10ms，和 G1 算法相比，改进非常明显。</p>
+<p><img src="./image001.png" alt="ZGC性能对比"></p>
+<p>ZGC目前处于实验阶段，只支持Linux/x64平台，可以在编译虚拟机时候通过参数<code>--with-jvm-features=zgc</code>来在虚拟机中启用ZGC。并在虚拟机参数中增加<code>-XX：+ UnlockExperimentalVMOptions -XX：+ UseZGC -Xmx10g</code>启用ZGC。</p>
+<h2 id="增强-Java-启动器"><a href="#增强-Java-启动器" class="headerlink" title="增强 Java 启动器"></a>增强 Java 启动器</h2><p>增强Java启动器指的是Java 11 能够直接运行单个的Java文件，源码在内存中编译，然后由解释器执行。要求所有的相关类定义在一个Java文件中。通过命令</p>
+<blockquote>
+<p>java HelloWorld.java</p>
+</blockquote>
+<p>可以直接运行源文件，这个命令相当于</p>
+<blockquote>
+<p>javac HelloWorld.java<br>java -cp . hello.World</p>
+</blockquote>
+<p>这个功能搭配JShell运行，对调试语言功能或者初学者非常友好。</p>
+<h2 id="lambda与局部类型推断"><a href="#lambda与局部类型推断" class="headerlink" title="lambda与局部类型推断"></a>lambda与局部类型推断</h2><p>在Java 10中还存在一条限制，局部类型推断不能用于lambda表达式。但是在Java 11中已经可以使用局部类型推断。这使得变量声明的方式可以统一。并且可以对lambda和隐式变量添加例如<code>@Nonnull</code>的注解。</p>
+<p>其他方面，lambda表达式本身可以通过类型推断类确定变量类型，和使用<code>var</code>保留字的功能有覆盖。意义不大。</p>
+<h2 id="内存分析"><a href="#内存分析" class="headerlink" title="内存分析"></a>内存分析</h2><p>Java 11 中提供一种低开销的 Java 堆分配采样方法，能够得到堆分配的 Java 对象信息，并且能够通过 JVMTI 访问堆信息。引入的新工具能够达到：</p>
+<ol>
+<li>长期开启而不会占用太多的内存消耗。</li>
+<li>只通过预定义的接口访问。</li>
+<li>能够对所有的堆区域进行采样。</li>
+<li>能给出Java对象信息。</li>
+</ol>
+<p>对于用于来说在遇到高CPU，高内存占用的使用可以通过一些额外的工具类来进行堆内存分析，例如 VisualVM tools,新工具相对于这类第三方工具能够提供内存中对象的分配的具体信息，能够显示出发生高内存分配的确切位置，更容易定位问题。</p>
+<h2 id="其他-3"><a href="#其他-3" class="headerlink" title="其他"></a>其他</h2><p>在内部类的处理方式上做了改进。在字节码方面引入了两个新的属性：一个叫做 <code>NestMembers</code> 的属性，用于标识其它已知的静态内嵌成员；另外一个是每个内嵌成员都包含的<code>NestHost</code>属性，用于标识出它的内嵌宿主类。</p>
+<p>将商用特性“飞行记录器”开源，飞行记录器是一种低开销的事件信息收集框架，用于对JVM进行故障检测分析，其数据来源于应用程序，VM，OS。通过<code>-XX:StartFlightRecording</code>启用。</p>
+<p>字节码层面增加了新的常量<code>CONSTANT_Dynamic</code>。其在初始化时候委托给 bootstrap 方法进行初始化创建对上层软件没有很大的影响，但是可以降低开发新形式的可实现类文件约束带来的成本和干扰。</p>
+<h1 id="Java-12"><a href="#Java-12" class="headerlink" title="Java 12"></a>Java 12</h1><p>Java 12 发布于2019年3月12日。</p>
+<h2 id="低停顿垃圾收集器-Shenandoah"><a href="#低停顿垃圾收集器-Shenandoah" class="headerlink" title="低停顿垃圾收集器 Shenandoah"></a>低停顿垃圾收集器 Shenandoah</h2><p>Shenandoah是一个实验阶段的收集器，通过交换 CPU 并发周期和空间以改善停顿时间，使得垃圾回收器执行线程能够在 Java 线程运行时进行堆压缩，并且标记和整理能够同时进行。研发团队对外宣称，Shenandoah 垃圾回收器的暂停时间与堆大小无关。不过实际使用性能将取决于实际工作堆的大小和工作负载。</p>
+<p><img src="./Shenandoah.png" alt="Shenandoah"></p>
+<h2 id="增强switch"><a href="#增强switch" class="headerlink" title="增强switch"></a>增强switch</h2><p>这是一个预览版的功能，并没有包含在Java SE标准里，预览指的是如果这个功能的反响并不好，则可能会被删除掉。本功能是第一个预览功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> dayNumber = <span class="keyword">switch</span> (day) &#123;</span><br><span class="line">    <span class="keyword">case</span> MONDAY, FRIDAY, SUNDAY -&gt; <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">case</span> TUESDAY                -&gt; <span class="number">7</span>;</span><br><span class="line">    <span class="keyword">case</span> THURSDAY, SATURDAY     -&gt; <span class="number">8</span>;</span><br><span class="line">    <span class="keyword">case</span> WEDNESDAY              -&gt; <span class="number">9</span>;</span><br><span class="line">    <span class="keyword">default</span>                      -&gt; <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Huh? "</span> + day);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Java 12中取消了<code>break</code>,同时也不会造成穿透。并提供了将多个<code>case</code>合并到一行的新特性。标签右侧只能是表达式，代码块或者<code>throw</code>语句。为了保持兼容性，原先的”:”依然可以使用，此时穿透会存在，并且不能和”-&gt;”混用。</p>
+<h2 id="改善G1收集器"><a href="#改善G1收集器" class="headerlink" title="改善G1收集器"></a>改善G1收集器</h2><p>G1收集器确定了回收集合后，一旦垃圾回收开始就必须处理完会收集合内的所有对象，一旦对象过于复杂或者对象过多，有可能在设定的暂停时间内无法完成垃圾回收工作。G1 垃圾收集器仅在进行完整 GC (Full GC) 或并发处理周期时才能将 Java 堆返回内存。由于 G1 回收器尽可能避免完整 GC，并且只触发基于 Java 堆占用和分配活动的并发周期，因此在许多情况下 G 1 垃圾回收器不能回收 Java 堆内存，除非有外部强制执行。</p>
+<p>Java 12对G1收集器进行了改进，将回收集合拆分为必需和可选两部分，使 G1 垃圾回收器能中止垃圾回收过程。其中必需处理的部分包括 G1 垃圾收集器不能递增处理的 GC 回收集的部分（如：年轻代），同时也可以包含老年代以提高处理效率。将 GC 回收集拆分为必需和可选部分时，需要为可选 GC 回收集部分维护一些其他数据，这会产生轻微的 CPU 开销，但小于 1 ％的变化，同时在 G1 回收器处理 GC 回收集期间，本机内存使用率也可能会增加，使用上述情况只适用于包含可选 GC 回收部分的 GC 混合回收集合。</p>
+<p>在G1收集器完成必须部分的垃圾回收后，根据剩余时间来决定是否终止回收工作，如果还有时间则进行可选部分的一个子集的垃圾回收直到可选部分完成。如果时间不足，则可以终止回收工作。</p>
+<p>Java 12 中同时也对 G1 垃圾回收器进行了改进，使其能够在空闲时自动将 Java 堆内存返还给操作系统。为了尽可能的回收内存空间，G1收集器会记录堆内存的使用情况，将长期不使用的内存返还给操作系统。这种情况适用于长期空闲的应用程序。当应用程序没有处于活动状态，G1收集器根据以下两个条件决定是否开始回收内存空间：</p>
+<ol>
+<li>自上次垃圾回收已经过了<code>G1PeriodicGCInterval</code>毫秒（》0），并且此时没有正在进行的垃圾回收。</li>
+<li>通过<code>getloadavg()</code>方法查询系统的平均负载，如果一分钟之内系统的平均负载小于<code>G1PeriodicGCSystemLoadThreshold</code>且<code>G1PeriodicGCInterval</code>不为0.</li>
+</ol>
+<p>如果两个条件都不满足，则再等待一个周期。如果<code>G1PeriodicGCInvokesConcurrent</code>设置了值，G1将继续上一个或者启动一个新的并发周期，如果没有设置，则G1会执行一个完整的GC。再每一个GC的末尾，G1将会调整堆内存大小，可能会将空闲内存返还给操作系统。</p>
+<h2 id="其他-4"><a href="#其他-4" class="headerlink" title="其他"></a>其他</h2><p>Java 12 中添加一套新的基本的微基准测试套件，使开发人员可以轻松运行现有的微基准测试并创建新的基准测试。</p>
+<p>在<code>java.lang.constant</code>包中增加了类，用来对关键类文件的名义描述进行建模。</p>
+<p>Java 12 中将只保留一套 AArch64 实现，删除所有与 arm64 实现相关的代码，只保留 32 位 ARM 端口和 64 位 aarch64 的端口。删除此套实现将允许所有开发人员将目标集中在剩下的这个 64 位 ARM 实现上，消除维护两套端口所需的重复工作。</p>
+<p>针对64位平台下的 JDK 构建过程进行了增强改进，使其默认生成类数据共享（CDS）归档，以进一步达到改进应用程序的启动时间的目的，同时也避免了需要手动运行：<code>-Xshare:dump</code> 的需要，修改后的 JDK 将在 lib/server 目录中保留构建时生成的 CDS 存档。</p>
+<h1 id="Java-13"><a href="#Java-13" class="headerlink" title="Java 13"></a>Java 13</h1><p>Java 13 发布于2019年9月13日。</p>
+<h2 id="动态AppCDS"><a href="#动态AppCDS" class="headerlink" title="动态AppCDS"></a>动态AppCDS</h2><p>Java 13 对Java 10 中引入的AppCDS进行了增强，允许在 Java 应用程序执行结束时动态进行类归档。在Java 10中，CDS必须要创建需要进行类归档的类列表，在Java 13中不再必须创建，可以使用<code>XX:ArchiveClassesAtExit</code>来控制应用程序在退出时候创建存档，或者使用<code>-XX:SharedArchiveFile</code>使用动态存档功能。</p>
+<h2 id="增强ZGC"><a href="#增强ZGC" class="headerlink" title="增强ZGC"></a>增强ZGC</h2><p>ZGC 是Java 11中引入基于Linux的实验性质GC，使得应用程序的吞吐能力下降不超过15%。但是ZGC并不会将空闲内存返回给操作系统。ZGC堆由一系列的ZPage组成，在GC之后，被回收的ZPage会被返回到ZPageCache中，并按照LRU原则，将最长时间没有使用的ZPage返换给操作系统，并保证最小堆内存不低于设置。如果将最大最小堆内存设置为一样，则不返还内存空间。</p>
+<p>除此之外Java 13 调整了ZGC使之最大支持的堆内存大小为16TB，并添加了新的参数<code>-XX:SoftMaxHeapSize</code>来软限制堆的最大大小，这个值应该不超过最大堆内存大小。它指的是，ZGC应该尽量将堆限制在<code>-XX:SoftMaxHeapSize</code>之下，但是也保留超出的能力。<code>-XX：-ZUncommit</code>显式关闭返还内存的功能。<code>-XX：ZUncommitDelay = &lt;seconds&gt;</code>（默认值为 300 秒）指定ZPage的最大空闲时间，超过此时间没有使用的空间将被返还。</p>
+<h2 id="重构Socket-API"><a href="#重构Socket-API" class="headerlink" title="重构Socket API"></a>重构Socket API</h2><p>Java 13 为 Socket API 带来了新的底层实现方法，并且在 Java 13 中是默认使用新的 Socket 实现，引入 <code>NioSocketImpl</code> 的实现用以替换 SocketImpl 的 <code>PlainSocketImpl</code> 实现，此实现与 NIO实现共享相同的内部基础结构，并且与现有的缓冲区高速缓存机制集成在一起，因此不需要使用线程堆栈。使其易于发现并在排除问题同时增加可维护性。使用 <code>java.lang.ref.Cleaner</code> 机制来关闭套接字，以及在轮询时套接字处于非阻塞模式时处理超时操作等方面。</p>
+<h2 id="switch-语句增强"><a href="#switch-语句增强" class="headerlink" title="switch 语句增强"></a>switch 语句增强</h2><p>在Java 12 的预览功能基础上进一步增强，仍然是一个预览功能。引入了<code>yield</code>关键字用来返回数据。也就是说在需要返回值的时候式用<code>yield</code>关键字，在不需要返回值的时候使用<code>break</code>。<code>yield</code>只会跳出当前switch语句块，并且需要由<code>default</code>语句。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getText</span><span class="params">(<span class="keyword">int</span> number)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">switch</span> (number) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>, <span class="number">2</span>:</span><br><span class="line">            yield <span class="string">"one or two"</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">            yield <span class="string">"three"</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>:</span><br><span class="line">            yield <span class="string">"four or five or six"</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            yield <span class="string">"unknown"</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="文本块"><a href="#文本块" class="headerlink" title="文本块"></a>文本块</h2><p>之前的Java中多行文本只能使用“+”拼接，并且需要处理转义字符，造成阅读的不便。Java 13 开始增加了文本块功能，借鉴python的多行文本，以“””””开头，以“””””结束的文本可以跨越多行，并且行中的所有特殊字符都被当作字符串处理。多行文本仍然是<code>String</code>的实例。</p>
+<p>文本块是一个预览功能，可以通过以下命令启用：</p>
+<blockquote>
+<p>javac –enable-preview –release 13 Example.java<br>java –enable-preview Example</p>
+</blockquote>
+<h2 id="其他-5"><a href="#其他-5" class="headerlink" title="其他"></a>其他</h2><p>增加了<code>FileSystems.newFileSystem(Pth,Map)</code>方法，以便更轻松地使用将文件内容视为文件系统的文件系统提供程序。</p>
+<p><code>java.util</code>中的I18N将Unicode支持升级到12.1。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      <div>
+            
+              
+
+            
+      </div>
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/15/Java锁/" rel="next" title="Java锁">
+                <i class="fa fa-chevron-left"></i> Java锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/10/Istio-Security/" rel="prev" title="Istio Security">
+                Istio Security <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTUxNi8xODA2Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="林兴武">
+            
+              <p class="site-author-name" itemprop="name">林兴武</p>
+              <p class="site-description motion-element" itemprop="description">博客不是收藏夹，所有文章都是原创，记录自己，帮助别人</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/linxingwu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:xingwu_lin@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-8"><span class="nav-number">1.</span> <span class="nav-text">Java 8</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda-和函数式接口"><span class="nav-number">1.1.</span> <span class="nav-text">Lambda 和函数式接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口静态方法和默认方法"><span class="nav-number">1.2.</span> <span class="nav-text">接口静态方法和默认方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复注解"><span class="nav-number">1.3.</span> <span class="nav-text">重复注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数名称"><span class="nav-number">1.4.</span> <span class="nav-text">参数名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具类"><span class="nav-number">1.5.</span> <span class="nav-text">工具类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">1.6.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM"><span class="nav-number">1.7.</span> <span class="nav-text">JVM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-9"><span class="nav-number">2.</span> <span class="nav-text">Java 9</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模块化"><span class="nav-number">2.1.</span> <span class="nav-text">模块化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JShell"><span class="nav-number">2.2.</span> <span class="nav-text">JShell</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合工具类"><span class="nav-number">2.3.</span> <span class="nav-text">集合工具类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平台日志管理"><span class="nav-number">2.4.</span> <span class="nav-text">平台日志管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反应式流"><span class="nav-number">2.5.</span> <span class="nav-text">反应式流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反射句柄"><span class="nav-number">2.6.</span> <span class="nav-text">反射句柄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-1"><span class="nav-number">2.7.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-10"><span class="nav-number">3.</span> <span class="nav-text">Java 10</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#局部变量类型推断"><span class="nav-number">3.1.</span> <span class="nav-text">局部变量类型推断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾收集器"><span class="nav-number">3.2.</span> <span class="nav-text">垃圾收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用程序类数据-AppCDS-共享"><span class="nav-number">3.3.</span> <span class="nav-text">应用程序类数据 (AppCDS) 共享</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Graal-GIT编译器"><span class="nav-number">3.4.</span> <span class="nav-text">Graal GIT编译器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-2"><span class="nav-number">3.5.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-11"><span class="nav-number">4.</span> <span class="nav-text">Java 11</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准HTTP-Client升级"><span class="nav-number">4.1.</span> <span class="nav-text">标准HTTP Client升级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#No-op垃圾收集器-Epsilon"><span class="nav-number">4.2.</span> <span class="nav-text">No-op垃圾收集器 Epsilon</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可伸缩低延迟垃圾收集器ZGC"><span class="nav-number">4.3.</span> <span class="nav-text">可伸缩低延迟垃圾收集器ZGC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增强-Java-启动器"><span class="nav-number">4.4.</span> <span class="nav-text">增强 Java 启动器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lambda与局部类型推断"><span class="nav-number">4.5.</span> <span class="nav-text">lambda与局部类型推断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存分析"><span class="nav-number">4.6.</span> <span class="nav-text">内存分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-3"><span class="nav-number">4.7.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-12"><span class="nav-number">5.</span> <span class="nav-text">Java 12</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#低停顿垃圾收集器-Shenandoah"><span class="nav-number">5.1.</span> <span class="nav-text">低停顿垃圾收集器 Shenandoah</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增强switch"><span class="nav-number">5.2.</span> <span class="nav-text">增强switch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改善G1收集器"><span class="nav-number">5.3.</span> <span class="nav-text">改善G1收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-4"><span class="nav-number">5.4.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-13"><span class="nav-number">6.</span> <span class="nav-text">Java 13</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#动态AppCDS"><span class="nav-number">6.1.</span> <span class="nav-text">动态AppCDS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增强ZGC"><span class="nav-number">6.2.</span> <span class="nav-text">增强ZGC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重构Socket-API"><span class="nav-number">6.3.</span> <span class="nav-text">重构Socket API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#switch-语句增强"><span class="nav-number">6.4.</span> <span class="nav-text">switch 语句增强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文本块"><span class="nav-number">6.5.</span> <span class="nav-text">文本块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-5"><span class="nav-number">6.6.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林兴武</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

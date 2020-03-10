@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="MBTgt9Mxa-LxR7QuvwTF3yIYs46YcoanpNJXjFqSQAw">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT, Java">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JUC locks锁框架 早期的JDK版本中，仅仅提供了synchronizd、wait、notify等等比较底层的多线程同步工具。java.util.concurrent.locks包下提供了一系列基础的锁工具，用以对synchronizd、wait、notify等进行补充、增强。 12345678interface Locks&amp;#123;    lock()    lockInterrupti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java锁">
+<meta property="og:url" content="http://linxingwu.github.io/2020/01/15/Java锁/index.html">
+<meta property="og:site_name" content="林兴武的博客">
+<meta property="og:description" content="JUC locks锁框架 早期的JDK版本中，仅仅提供了synchronizd、wait、notify等等比较底层的多线程同步工具。java.util.concurrent.locks包下提供了一系列基础的锁工具，用以对synchronizd、wait、notify等进行补充、增强。 12345678interface Locks&amp;#123;    lock()    lockInterrupti">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/15/Java锁/Package%20locks.png">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/15/Java锁/5507455-37635d0723174712.webp">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/15/Java锁/读锁.jpg">
+<meta property="og:image" content="http://linxingwu.github.io/2020/01/15/Java锁/写锁.jpg">
+<meta property="og:updated_time" content="2020-03-10T09:43:35.695Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java锁">
+<meta name="twitter:description" content="JUC locks锁框架 早期的JDK版本中，仅仅提供了synchronizd、wait、notify等等比较底层的多线程同步工具。java.util.concurrent.locks包下提供了一系列基础的锁工具，用以对synchronizd、wait、notify等进行补充、增强。 12345678interface Locks&amp;#123;    lock()    lockInterrupti">
+<meta name="twitter:image" content="http://linxingwu.github.io/2020/01/15/Java锁/Package%20locks.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://linxingwu.github.io/2020/01/15/Java锁/">
+
+
+
+
+
+  <title>Java锁 | 林兴武的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3db2dd678acf5b830ae79029bad47113";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/linxingwu/linxingwu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林兴武的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linxingwu.github.io/2020/01/15/Java锁/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="林兴武">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林兴武的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java锁</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-15T10:44:30+08:00">
+                2020-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="JUC-locks锁框架"><a href="#JUC-locks锁框架" class="headerlink" title="JUC locks锁框架"></a>JUC locks锁框架</h1><p><img src="./Package&#32;locks.png" alt="JUC locks"></p>
+<p>早期的JDK版本中，仅仅提供了<code>synchronizd</code>、<code>wait</code>、<code>notify</code>等等比较底层的多线程同步工具。<code>java.util.concurrent.locks</code>包下提供了一系列基础的锁工具，用以对<code>synchronizd</code>、<code>wait</code>、<code>notify</code>等进行补充、增强。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">interface Locks&#123;</span><br><span class="line">    lock()</span><br><span class="line">    lockInterruptibly()</span><br><span class="line">    tryLock()</span><br><span class="line">    tryLock(long,TimeUtil)</span><br><span class="line">    unlock()</span><br><span class="line">    newCondition()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="ReentrantLock类"><a href="#ReentrantLock类" class="headerlink" title="ReentrantLock类"></a>ReentrantLock类</h2><p><code>ReentrantLock</code>类，实现了<code>Lock</code>接口，是一种可重入的独占锁，它具有与使用 <code>synchronized</code> 相同的一些基本行为和语义，但功能更强大。<code>ReentrantLock</code>内部通过内部类实现了AQS(<code>AbstractQueuedSynchronizer</code>)框架的API来实现独占锁的功能。<code>ReentrantLock</code>默认使用非公平的策略，但是可以通过构造器添加参数来使用公平策略。</p>
+<p>公平策略按照先来后到的原则来允许线程获得锁，避免了饥饿，但是受到线程唤醒的影响效率并不如非公平策略。实际上在非公平模式下，并发线程会在尝试获取锁的时候会首先通过CAS修改state，如果失败，则仍然进入队列排队，按照先来后到的顺序获取锁。公平模式下则是直接进入队列。</p>
+<p><code>ReentrantLock</code>中主要拥有一个内部类<code>Sync</code>，这是AQS的子类，也是<code>ReentrantLock</code>主要的实现原理。<code>Sync</code>的实例有两种，一种是<code>FairSync</code>另一种是<code>NonfairSync</code>,分别对应公平策略和非公平策略。对锁的获取最终会委托给<code>Sync.tryAcquire(int)</code>方法。这个方法是AQS中核心方法，留给子类实现。</p>
+<p>在公平模式获取锁：</p>
+<ol>
+<li>如果代表加锁次数的属性<code>state</code>为0，并且等待队列中没有其他线程，则以CAS的方式更新<code>state</code>。然后设置当前线程获得锁。</li>
+<li>如果状态不为0，且当前线程已经获得了锁，则说明是重入情况。此时更新<code>state</code>,并处理可能会出现的溢出异常。</li>
+<li>如果不是前两种情况，则获取锁失败了。此时通过自旋，将当前线程包装成一个节点，插入到等待线程的双向链表中。</li>
+<li>从等待队列中取出当前节点并判断是否是首节点，并尝试获取锁，如果获取不到，则需要根据前置节点的状态判断是否阻塞当前线程。为了保证当前线程能够被唤醒，前置节点必须为SIGNAL。如果为CANCELLED，则说明前置节点应该被移除，并重新尝试。最终设置前置节点状态为SIGNAL然后阻塞当前线程。</li>
+</ol>
+<p>释放锁：</p>
+<ol>
+<li>当前线程必须是锁的独占线程，然后将<code>state</code>减1。如果<code>state</code>为0，则将独占线程设置为<code>null</code>。</li>
+<li>遍历队列，如果节点状态不为CANCELLED，则唤醒这个节点。</li>
+<li>被唤醒节点会返回自己的中断标识，标识自己在阻塞期间是否被中断，这里是一种延迟中断策略。然后尝试获取锁。</li>
+<li>获取锁之后会清楚其前置节点，并将自己设置为队首元素。</li>
+</ol>
+<p>对于等待线程被中断时候，<code>acquireQueued</code>方法会用一个标志位用来记录，并不会抛出异常，而<code>doAcquireInterruptibly</code>方法则会直接抛出异常。</p>
+<p>对于限时等待的支持，通过<code>doAcquireNanos</code>方法实现。这个方法是一个自旋操作，在规定时间内不断尝试获取锁，获取不到就阻塞，并且会响应中断。其阻塞是通过<code>Unsafe.park</code>方法调用native方法实现的。如果超时获取不到锁就会调用<code>cancelAcquire</code>方法取消一个正在获取锁的线程。该方法主要将到期的节点等待状态修改为CANCELLED，然后等待被GC回收。</p>
+<h2 id="LockSupport类"><a href="#LockSupport类" class="headerlink" title="LockSupport类"></a>LockSupport类</h2><p><code>LockSupport</code>类，是JUC包中的一个工具类，是用来创建锁和其他同步类的基本线程阻塞原语。<code>LockSupport</code>类的核心方法其实就只有两个<code>Park</code>和<code>Unpark</code>，一个用于阻塞一个用于唤醒线程，相比于<code>wait</code>和<code>signial</code>方法，其能针对特定线程进行操作。</p>
+<h2 id="AbstractQueuedSynchronizer抽象类"><a href="#AbstractQueuedSynchronizer抽象类" class="headerlink" title="AbstractQueuedSynchronizer抽象类"></a>AbstractQueuedSynchronizer抽象类</h2><p>AQS是整个JUC包的核心，提供了一套通用的机制来管理同步状态（synchronization state）、阻塞/唤醒线程、管理等待队列。<code>ReentrantLock</code>、<code>CountDownLatch</code>、<code>CyclicBarrier</code>等同步器，其实都是通过内部类实现了AQS框架暴露的API，以此实现各类同步器功能。这些同步器的主要区别其实就是对同步状态的定义不同。</p>
+<p>AQS框架，分离了构建同步器时的一系列关注点，它的所有操作都围绕着资源——同步状态来展开，并替用户解决了如下问题：</p>
+<ol>
+<li>资源是可以被同时访问？还是在同一时间只能被一个线程访问？（共享/独占功能）</li>
+<li>访问资源的线程如何进行并发管理？（等待队列）</li>
+<li>如果线程等不及资源了，如何从等待队列退出？（超时/中断）</li>
+</ol>
+<p>这其实是一种典型的模板方法设计模式：父类（AQS框架）定义好骨架和内部操作细节，具体规则由子类去实现。</p>
+<table>
+<thead>
+<tr>
+<th>同步器</th>
+<th>资源的定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReentrantLock</td>
+<td>资源表示独占锁。State为0表示锁可用；为1表示被占用；为N表示重入的次数</td>
+</tr>
+<tr>
+<td>CountDownLatch</td>
+<td>资源表示倒数计数器。State为0表示计数器归零，所有线程都可以访问资源；为N表示计数器未归零，所有线程都需要阻塞。</td>
+</tr>
+<tr>
+<td>Semaphore</td>
+<td>资源表示信号量或者令牌。State≤0表示没有令牌可用，所有线程都需要阻塞；大于0表示由令牌可用，线程每获取一个令牌，State减1，线程每释放一个令牌，State加1。</td>
+</tr>
+<tr>
+<td>ReentrantReadWriteLock</td>
+<td>资源表示共享的读锁和独占的写锁。state逻辑上被分成两个16位的unsigned short，分别记录读锁被多少线程使用和写锁被重入的次数。</td>
+</tr>
+</tbody>
+</table>
+<p>AQS提供了对并发管理的一套模板框架，开发者并不需要了解其中的实现细节，并且其中很多方法都是<code>final</code>或<code>private</code>的，设计者并不希望开发者使用这些方法。AQS暴露了一些待实现的API以方便开发者解决在并发中自定义的问题，包括资源是如何被定义如何方法的。</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tryAcquire()</td>
+<td>排它获取（资源数）</td>
+</tr>
+<tr>
+<td>tryRelease()</td>
+<td>排它释放（资源数）</td>
+</tr>
+<tr>
+<td>tryAcquireShared()</td>
+<td>共享获取（资源数）</td>
+</tr>
+<tr>
+<td>tryReleaseShared()</td>
+<td>共享获取（资源数）</td>
+</tr>
+<tr>
+<td>isHeldExclusively()</td>
+<td>是否排它状态</td>
+</tr>
+</tbody>
+</table>
+<p>在AQS内部使用了一个int类型的state代表了资源，并暴露出<code>getState</code>,<code>setState</code>,<code>compareAndSetState</code>方法来对state进行修改。对于线程的阻塞和唤醒，是通过<code>LockSupport</code>实现。对于等待线程的管理是AQS实现的核心，等待队列是一种严格FIFIO的队列，采用双向链表实现。基于一种CLS锁变种。CLH锁是一种基于链表的可扩展、高性能、公平的自旋锁，申请线程只在本地变量上自旋，它不断轮询前驱的状态，如果发现前驱释放了锁就结束自旋。</p>
+<p>CLH队列中的节点都是对线程的封装，节点一共有两种类型分为独占节点（EXCLUSIVE）和共享节点(SHARED)。每个节点又会有一些自己的状态。CLH的实现中会用前一个节点的属性（<code>waitStatus</code>）来标识后一个节点的状态。当加入第一个线程时会默认创建一个虚拟节点，并使用虚拟节点的<code>waitStatus</code>标识第一个节点的状态。</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>代码</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CANCELLED</td>
+<td>1</td>
+<td>取消。表示后驱结点被中断或超时，需要移出队列</td>
+</tr>
+<tr>
+<td>SIGNAL</td>
+<td>-1</td>
+<td>发信号。表示后驱结点被阻塞了（当前结点在入队后、阻塞前，应确保将其prev结点类型改为SIGNAL，以便prev结点取消或释放时将当前结点唤醒。）</td>
+</tr>
+<tr>
+<td>CONDITION</td>
+<td>-2</td>
+<td>Condition专用。表示当前结点在Condition队列中，因为等待某个条件而被阻塞了</td>
+</tr>
+<tr>
+<td>PROPAGATE</td>
+<td>-3</td>
+<td>传播。适用于共享模式（比如连续的读操作结点可以依次进入临界区，设为PROPAGATE有助于实现这种迭代操作。）</td>
+</tr>
+<tr>
+<td>INITIAL</td>
+<td>0</td>
+<td>默认。新结点会处于这种状态</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Condition类"><a href="#Condition类" class="headerlink" title="Condition类"></a>Condition类</h3><p>AQS中包含了<code>Condition</code>的实现用来实现条件等待。<code>Condition</code>提供了<code>await()</code>方法将当前线程阻塞，并提供<code>signal()</code>方法支持另外一个线程将已经阻塞的线程唤醒。<code>Condition</code>需要结合<code>Lock</code>使用。线程调用<code>await()</code>方法前必须获取锁，调用<code>await()</code>方法时，将线程构造成节点加入等待队列，同时释放锁，并挂起当前线程。其他线程调用<code>signal()</code>方法前也必须获取锁，当执行<code>signal()</code>方法时将等待队列的节点移入到同步队列，当线程退出临界区释放锁的时候，唤醒同步队列的首个节点。<code>Condition</code>提供了类似<code>object.wait</code>和<code>notify</code>的线程通信机制，但是<code>condition</code>支持多个等待队列，使用上更加灵活。</p>
+<p><img src="./5507455-37635d0723174712.webp" alt="Contiditon执行过程"></p>
+<h3 id="CountDownLatch类"><a href="#CountDownLatch类" class="headerlink" title="CountDownLatch类"></a>CountDownLatch类</h3><p><code>CountDownLatch</code>采用AQS实现了共享锁的功能。其构造方法指定资源<code>state</code>。线程调用<code>await()</code>方法后会进入等待队列，并阻塞自身。当其他线程调用<code>countDown()</code>时会将资源数减少，等资源数位0时表示没有锁。此时<code>CountDownLatch</code>实现的<code>tryReleaseShared</code>方法会判断资源数是否为0，如果为0，则AQS的<code>doReleaseShared</code>方法被调用，此方法会唤醒等待队列的头节点，头节点被唤醒后会继续向后传播，直至唤醒所有节点。</p>
+<p><code>CyclicBarrier</code>与之有着类似功能，但是<code>CyclicBarrier</code>是可以重用的。<code>CyclicBarrier</code>通过<code>Condition</code>和<code>ReentrantLock</code>来做实现。其关键代码在<code>dowait</code>方法中，当指定数量的线程全部到达时候如果指定了后续任务，则开始运行后续任务，否则先到达的线程阻塞等待后续线程运行。当阻塞线程被中断时,抛出<code>BrokenBarrierException</code>。通过<code>reset</code>方法来重置<code>CyclicBarrier</code>。该方法首先破坏栅栏，然后重置计数器。</p>
+<h3 id="Semaphore类"><a href="#Semaphore类" class="headerlink" title="Semaphore类"></a>Semaphore类</h3><p><code>Semaphore</code>内部构造和<code>CountDownLatch</code>大同小异，都是接用AQS的API，定义了公平策略和非公平策略两个内部类。其构造方法指定了许可数量和公平与否。当许可降低为0时候后续线程必须阻塞，和<code>CountDownLatch</code>逻辑有些相反。这其实反映了对资源状态不同的定义。</p>
+<p><code>Sync</code>是<code>Semaphore</code>的一个内部抽象类，公平策略的<code>FairSync</code>和非公平策略的<code>NonFairSync</code>都继承该类。</p>
+<p><code>Semaphore</code>对于<code>tryAcquireShared</code>的实现主要是比较状态和剩余许可，当队列中有线程等待时，直接返回负数，代表失败。非公平策略则不管队列中是否有线程等待，直接尝试获取许可。否则CAS自旋将状态减少获取许可数，返回剩余状态。可以一次获取多个许可，如果剩余状态不足<code>doAcquireSharedInterruptibly</code>方法会将当前线程包装成<code>Node</code>节点，并加入等待队列。然后自旋尝试获取资源，如果获取失败则将前置节点设置为<code>SINGNAL</code>表示自身需要被唤醒，然后阻塞线程。</p>
+<p>线程调用<code>release</code>方法归还许可，<code>tryReleaseShared</code>方法通过自旋CAS来更新state，直到更新成功。成功之后<code>doReleaseShared</code>方法会唤醒等待队列中的等待节点。被唤醒的节点继续原先的自旋，尝试获取许可，获得许可后将自身设置为等待队列的头节点，并传播状态尝试唤醒后续等待节点。</p>
+<p>当资源大于1时候，<code>Semaphore</code>限制了并发量，但是并不能保证数据的一致性，它并不能起到锁的作用。</p>
+<h3 id="ReentrantReadWriteLock类"><a href="#ReentrantReadWriteLock类" class="headerlink" title="ReentrantReadWriteLock类"></a>ReentrantReadWriteLock类</h3><p><code>ReentrantReadWriteLock</code>（以下简称RRW），也就是读写锁，是一个比较特殊的同步器，特殊之处在于其对同步状态<code>State</code>的定义与<code>ReentrantLock</code>、<code>CountDownLatch</code>都很不同。</p>
+<p>其构造方法仍然允许通过一个布尔值控制公平与否的策略。RRW提供了获取读锁写锁的方法，返回实例为两个实现了<code>Lock</code>接口的内部类。读锁是一种共享锁，实现了AQS的共享功能。其内部调用了<code>acquireShared</code>方法。</p>
+<p>RRW仍然使用一个int类型的state表示资源的状态，但是在RRW里需要表示读状态和写状态，因此，int的高低16位分别表示两个状态。</p>
+<p>读锁的获取过程：</p>
+<ol>
+<li>如果写锁已被占用，并且不是当前线程独占，直接返回失败。</li>
+<li>如果读锁重入数量超过65536，抛出异常。</li>
+<li>如果根据公平性原则判断当前线程不需要等待并且CAS设置状态成功，返回成功。</li>
+<li>如果没有返回，说明当前线程需要等待，或者CAS设置失败。此时调用<code>fullTryAcquireShared</code>一直自旋尝试CAS设置状态。</li>
+</ol>
+<p><img src="./读锁.jpg" alt="读锁的获取"></p>
+<p>写锁是一种独占锁，线程会在判断锁被其他线程获取的时候进入等待队列并被阻塞。<br><img src="./写锁.jpg" alt="写锁的获取"></p>
+<p>读锁会通过内部类<code>HoldCounter</code>来保存每个线程的读锁重入数量。释放时，会将读锁重入数量减少1。当读锁重入数为0时，调用<code>doReleaseShared</code>方法来唤醒等待队列的线程。</p>
+<p>在非公平模式下，写锁永远可以直接获取锁。这其实时性能优化的考虑，因为大多数情况写锁涉及的操作时间耗时要远大于读锁，频次远低于读锁，这样可以防止写线程一直处于饥饿状态。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      <div>
+            
+              
+
+            
+      </div>
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/13/Java虚拟机/" rel="next" title="Java虚拟机">
+                <i class="fa fa-chevron-left"></i> Java虚拟机
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/16/JDK版本更新特性/" rel="prev" title="JDK版本更新特性">
+                JDK版本更新特性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTUxNi8xODA2Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="林兴武">
+            
+              <p class="site-author-name" itemprop="name">林兴武</p>
+              <p class="site-description motion-element" itemprop="description">博客不是收藏夹，所有文章都是原创，记录自己，帮助别人</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/linxingwu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:xingwu_lin@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JUC-locks锁框架"><span class="nav-number">1.</span> <span class="nav-text">JUC locks锁框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock类"><span class="nav-number">1.1.</span> <span class="nav-text">ReentrantLock类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LockSupport类"><span class="nav-number">1.2.</span> <span class="nav-text">LockSupport类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractQueuedSynchronizer抽象类"><span class="nav-number">1.3.</span> <span class="nav-text">AbstractQueuedSynchronizer抽象类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Condition类"><span class="nav-number">1.3.1.</span> <span class="nav-text">Condition类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CountDownLatch类"><span class="nav-number">1.3.2.</span> <span class="nav-text">CountDownLatch类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Semaphore类"><span class="nav-number">1.3.3.</span> <span class="nav-text">Semaphore类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantReadWriteLock类"><span class="nav-number">1.3.4.</span> <span class="nav-text">ReentrantReadWriteLock类</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">林兴武</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
